@@ -85,7 +85,7 @@ body: {
 
 - Create new Flash Card
 ```shell
-CREATE /api/v1/users/user_id/cards
+POST /api/v1/users/user_id/cards
 Content-Type: application/json
 Accept: application/json
 body: {
@@ -138,7 +138,7 @@ Status 200
 
 - Update Flash Card
 ```shell
-Patch /api/v1/users/user_id/cards/card_id
+PATCH /api/v1/users/user_id/cards/card_id
 Content-Type: application/json
 Accept: application/json
 body: { 
