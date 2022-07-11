@@ -200,14 +200,12 @@ Status 200
         "attributes": {
             "cards": [
                {"id": 1,
-                "user_id": 23,
                 "type": 0,
                 "question": "A question",
                 "answer": "The answer to the question"
                 "rating": 0
                },
                {"id": 2,
-                "user_id": 23,
                 "type": 2,
                 "question": "Another question",
                 "answer": "The answer to the new question"
