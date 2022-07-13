@@ -240,7 +240,9 @@ Status 200
   
 </details>
 
-- Return all Flash Cards for a User
+<details>
+  <summary><b>Return all Flash Cards for a User</b></summary>
+
 ```shell
 GET /api/v1/users/:user_id/cards
 
@@ -308,3 +310,5 @@ If the user_id is not in the DB, i see this error with a status of 404:
 ```
   "error": "no user found with the given id."
 ```
+  
+  </details>
