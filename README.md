@@ -4,8 +4,9 @@ The RESTful API for DevPrep
 
 
 ## Endpoints
-
-- Register User
+<details>
+  <summary><b/> Register User </b> </summary>
+  
 ```shell
 POST api/v1/users
 Content-Type: application/json
@@ -31,8 +32,13 @@ body: {
     }
 }
 ```
+  
+</details>
 
-- Login User
+
+<details>
+  <summary><b>Login User</b></summary>
+  
 ```shell
 POST api/v1/login
 Content-Type: application/json
@@ -58,7 +64,11 @@ body: {
 }
 ```
 
-- Update user with codewars username
+</details>
+
+<details>
+  <summary><b>Update user with codewars username</b></summary>
+  
 ```shell
 PATCH /api/v1/users
 Content-Type: application/json
@@ -82,8 +92,11 @@ body: {
     }
 }
 ```
-
-- Create new Flash Card
+  
+</details>
+<details>
+  <summary><b> Create new Flash Card</b></summary>
+ 
 ```shell
 POST /api/v1/cards
 Content-Type: application/json
@@ -121,8 +134,11 @@ If the `user_id` is not present, or not in the DB, i see this error with the sta
 }
 ```
 
-
-- Find A Flash Card
+  </details>
+  
+<details>
+  <summary><b> Find A Flash Card</b></summary>
+  
 ```shell
 GET /api/v1/users/:user_id/cards/:card_id
 ```
@@ -150,8 +166,11 @@ If the `user_id` or `:flash_card_id` is not in the DB, i see this error with the
   "error": "invalid user_id or flash_card_id"
 }
 ```
+  
+</details>
+<details>
+  <summary><b>Update Flash Card</b></summary>
 
-- Update Flash Card
 ```shell
 PATCH api/v1/users/:user_id/cards/:card_id
 Content-Type: application/json
@@ -188,7 +207,12 @@ If the `user_id` is not in the database, I should see this error with a status c
   "error": "invalid user_id"
 }
 ```
-- Delete Flash Card
+  
+</details>
+
+<details>
+  <summary><b>Delete Flash Card</b></summary>
+
 ```shell
 DELETE /api/v1/users/user_id/cards/card_id
 Content-Type: application/json
@@ -213,6 +237,9 @@ Status 200
     }
 }
 ```
+  
+</details>
+
 - Return all Flash Cards for a User
 ```shell
 GET /api/v1/users/:user_id/cards
