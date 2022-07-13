@@ -153,26 +153,39 @@ If the `user_id` or `:flash_card_id` is not in the DB, i see this error with the
 
 - Update Flash Card
 ```shell
-PATCH /api/v1/users/user_id/cards/card_id
+PATCH api/v1/users/:user_id/cards/:card_id
 Content-Type: application/json
 Accept: application/json
-body: { 
-  "rating": 4
-  "answer": "A new answer to the question"
+body: {
+  "category": "technical",
+  "competence_rating": 4.5,
+  "front_side": "What is MVC?",
+  "back_side": "stuff and things"
 }
 ```
----
+*note that you do need at least 1 attribute present to send this request*
+
+Then I should see the following response with a status code of 200:
 ```
-Status 200
 {
-    "data": {
-        "id": nil,
-        "type": "card",
-        "attributes": {
-            "text": "Card "X" has been updated sucessfully"
-            }
-        }
+  "data": {
+    "id": "1",
+    "type": "flash_card",
+    "attributes": {
+      "category": "technical",
+      "competence_rating": 4.5,
+      "front_side": "what is MVC?",
+      "back_side": "stuff and things",
+      "user_id": "1"
     }
+  }
+}
+```
+
+If the `user_id` is not in the database, I should see this error with a status code of 400:
+```
+{
+  "error": "invalid user_id"
 }
 ```
 - Delete Flash Card
