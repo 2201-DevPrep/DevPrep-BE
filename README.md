@@ -85,33 +85,43 @@ body: {
 
 - Create new Flash Card
 ```shell
-POST /api/v1/users/user_id/cards
+POST /api/v1/cards
 Content-Type: application/json
 Accept: application/json
 body: {
-  "type": 0,
-  "question": "A question",
-  "answer": "The answer to the question"
+  "user_id": "1",
+  "category": "technical",     <-- (or "behavioral")
+  "front_side": "What is MVC?",
+  "back_side": "stuff and things",     <-- (optional)
 }
 ```
 ---
 ```
 Status 201
 {
-    "data": {
-        "id": nil,
-        "type": "card",
-        "attributes": {
-            "id": 1,
-            "type": 0,
-            "question": "A question",
-            "answer": "The answer to the question"
-            "rating": 0
-            }
-        }
+  "data": {
+    "id": "1",
+    "type": "flash_card",
+    "attributes": {
+      "category": "technical",
+      "competence_rating": 0,
+      "front_side": "what is MVC?",
+      "back_side": "stuff and things",
+      "user_id": "1"
     }
+  }
 }
 ```
+
+
+If the `user_id` is not present, or not in the DB, i see this error with the status code 400:
+```
+{
+  "error": "invalid user_id"
+}
+```
+
+
 - Find A Flash Card
 ```shell
 GET /api/v1/users/user_id/cards
