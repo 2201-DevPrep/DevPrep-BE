@@ -14,7 +14,7 @@ Accept: application/json
 body: {
   "username": "coolguy123",
   "email": "hello@example.com",
-  "codewars_username": undefined
+  "codewarsUsername": undefined
 }
 ```
 ---
@@ -46,48 +46,72 @@ body: {
   "username": "coolguy123"
   }
 ```
----
+--- (should be a Dashboard response)
 ```
 {
-    "data": {
-        "id": "1",
-        "type": "user",
-        "attributes": {
-             "email": "hello@example.com",
-             "username": "coolguy123",
-             "codewars_username": "null"
-            
+  "data": {
+    "userId": "1",
+    "type": "user_dashboard",
+    "attributes": {
+      "username": "coolguy123",
+      "preparednessRating": {
+        "technicalBE": 4.34,
+        "technicalFE": 3.54,
+        "behavioral": 5.0
+      },
+      "cwAttributes": {
+        "cwLeaderboardPosition": 236,
+        "totalCompleted": 230,
+        "languageRanks": {
+          "java": 1234,
+          "ruby": 1324,
+          [...]
         }
+      }
     }
+  }
 }
 ```
 
 </details>
 
 <details>
-  <summary><b>Update user with codewars username</b></summary>
+  <summary><b>Update user</b></summary>
   
 ```shell
-PATCH /api/v1/users
+PATCH /api/v1/users/:user_id
 Content-Type: application/json
 Accept: application/json
 body: {
-  "email": "hello@example.com",
-  "codewars_username": "SuperHacker3000"
+  "codewarsUsername": "SuperHacker3000",
+  "username": "goofyguy1342"
+  [any/all attributes can be updated]
 }
 ```
----
+--- (should be a dashbpard response)
 ```
 {
-    "data": {
-        "id": "1",
-        "type": "user",
-        "attributes": {
-            "email": "hello@example.com",
-            "codewars_username": "SuperHacker3000"
-            }
+  "data": {
+    "user_id": "1",
+    "type": "userDashboard",
+    "attributes": {
+      "username": "coolguy123",
+      "preparednessRating": {
+        "technicalBE": 4.34,
+        "technicalFE": 3.54,
+        "behavioral": 5.0
+      },
+      "cwAttributes": {
+        "cwLeaderboardPosition": 236,
+        "totalCompleted": 230,
+        "languageRanks": {
+          "java": 1234,
+          "ruby": 1324,
+          [...]
         }
+      }
     }
+  }
 }
 ```
   
@@ -96,14 +120,13 @@ body: {
   <summary><b> Create new Flash Card</b></summary>
  
 ```shell
-POST /api/v1/cards
+POST /api/v1/users/:user_id/cards
 Content-Type: application/json
 Accept: application/json
 body: {
-  "user_id": "1",
-  "category": "technical-BE",     <-- (or "technical-FE", "behavioral")
-  "front_side": "What is MVC?",
-  "back_side": "stuff and things",     <-- (optional)
+  "category": "technicalBE",     <-- (or "technicalFE", "behavioral")
+  "frontSide": "What is MVC?",
+  "backSide": "stuff and things",     <-- (optional)
 }
 ```
 ---
@@ -112,13 +135,13 @@ Status 201
 {
   "data": {
     "id": "1",
-    "type": "flash_card",
+    "type": "flashCard",
     "attributes": {
-      "category": "technical-BE",
-      "competence_rating": 0,
-      "front_side": "what is MVC?",
-      "back_side": "stuff and things",
-      "user_id": "1"
+      "category": "technicalBE",
+      "competenceRating": 0,
+      "frontSide": "what is MVC?",
+      "backSide": "stuff and things",
+      "userId": "1"
     }
   }
 }
@@ -146,13 +169,13 @@ Status 200
 {
   "data": {
     "id": "1",
-    "type": "flash_card",
+    "type": "flashCard",
     "attributes": {
-      "category": "technical-BE",
-      "competence_rating": 4.5,
-      "front_side": "what is MVC?",
-      "back_side": "A design pattern commonly used to build web applications.",
-      "user_id": "1"
+      "category": "technicalBE",
+      "competenceRating": 4.5,
+      "frontSide": "what is MVC?",
+      "backSide": "A design pattern commonly used to build web applications.",
+      "userId": "1"
     }
   }
 }
@@ -175,9 +198,10 @@ Content-Type: application/json
 Accept: application/json
 body: {
   "category": "technical",
-  "competence_rating": 4.5,
-  "front_side": "What is MVC?",
-  "back_side": "stuff and things"
+  "competenceRating": 4.5,
+  "frontSide": "What is MVC?",
+  "backSide": "stuff and things"
+  [any/all attributes can be updated]
 }
 ```
 *note that you do need at least 1 attribute present to send this request*
@@ -187,13 +211,13 @@ Then I should see the following response with a status code of 200:
 {
   "data": {
     "id": "1",
-    "type": "flash_card",
+    "type": "flashCard",
     "attributes": {
-      "category": "technical-FE",
-      "competence_rating": 4.5,
-      "front_side": "what is MVC?",
-      "back_side": "stuff and things",
-      "user_id": "1"
+      "category": "technicalFE",
+      "competenceRating": 4.5,
+      "frontSide": "what is MVC?",
+      "backSide": "stuff and things",
+      "userId": "1"
     }
   }
 }
@@ -212,12 +236,12 @@ If the `user_id` is not in the database, I should see this error with a status c
   <summary><b>Delete Flash Card</b></summary>
 
 ```shell
-DELETE /api/v1/users/user_id/cards/card_id
+DELETE /api/v1/users/:user_id/cards/:card_id
 Content-Type: application/json
 Accept: application/json
 body: {
   "email": "hello@example.com",
-  "card_id": 34
+  "cardId": 34
   }
 
 ```
@@ -251,52 +275,52 @@ GET /api/v1/users/:user_id/cards
 Status 200
 {
   "data": {
-    "technical_cards": [
+    "technicalCards": [
       {
         "id": "1",
-        "type": "flash_card",
+        "type": "flashCard",
         "attributes": {
           "category": "technical",
-          "competence_rating": 4.5,
-          "front_side": "what is MVC?",
-          "back_side": "A design pattern commonly used to build web applications.",
-          "user_id": "1"
+          "competenceRating": 4.5,
+          "frontSide": "what is MVC?",
+          "backSide": "A design pattern commonly used to build web applications.",
+          "userId": "1"
         }
       },
       {
         "id": "2",
-        "type": "flash_card",
+        "type": "flashCard",
         "attributes": {
           "category": "technical",
-          "competence_rating": 0,
-          "front_side": "Explain your understanding of relational databases.",
-          "back_side": "",
-          "user_id": "1"
+          "competenceRating": 0,
+          "frontSide": "Explain your understanding of relational databases.",
+          "backSide": "",
+          "userId": "1"
         }
       },
       {...}
     ],
-    "behavioral_cards": [
+    "behavioralCards": [
       {
         "id": "3",
-        "type": "flash_card",
+        "type": "flashCard",
         "attributes": {
           "category": "behavioral",
-          "competence_rating": 0,
-          "front_side": "What are you looking for in a role?",
-          "back_side": "",
-          "user_id": "1"
+          "competenceRating": 0,
+          "frontSide": "What are you looking for in a role?",
+          "backSide": "",
+          "userId": "1"
         }
       },
       {
         "id": "4",
-        "type": "flash_card",
+        "type": "flashCard",
         "attributes": {
           "category": "technical",
-          "competence_rating": 0,
-          "front_side": "What are you proud of?",
-          "back_side": "",
-          "user_id": "1"
+          "competenceRating": 0,
+          "frontSide": "What are you proud of?",
+          "backSide": "",
+          "userId": "1"
         }
       },
       {...}
