@@ -88,7 +88,7 @@ body: {
   [any/all attributes can be updated]
 }
 ```
---- (should be a dashbpard response)
+--- (should be a dashboard response)
 ```
 {
   "data": {
