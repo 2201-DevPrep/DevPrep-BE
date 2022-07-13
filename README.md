@@ -124,25 +124,30 @@ If the `user_id` is not present, or not in the DB, i see this error with the sta
 
 - Find A Flash Card
 ```shell
-GET /api/v1/users/user_id/cards
+GET /api/v1/users/:user_id/cards/:card_id
 ```
 ---
 ```
 Status 200
 {
-    "data": {
-        "id": nil,
-        "type": "card",
-        "attributes": {
-            "id": 1,
-            "user_id": 23,
-            "type": 0,
-            "question": "A question",
-            "answer": "The answer to the question"
-            "rating": 0
-            }
-        }
+  "data": {
+    "id": "1",
+    "type": "flash_card",
+    "attributes": {
+      "category": "technical",
+      "competence_rating": 4.5,
+      "front_side": "what is MVC?",
+      "back_side": "A design pattern commonly used to build web applications.",
+      "user_id": "1"
     }
+  }
+}
+```
+
+If the `user_id` or `:flash_card_id` is not in the DB, i see this error with the status code 404:
+```
+{
+  "error": "invalid user_id or flash_card_id"
 }
 ```
 
