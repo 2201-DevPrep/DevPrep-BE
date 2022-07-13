@@ -12,9 +12,8 @@ POST api/v1/users
 Content-Type: application/json
 Accept: application/json
 body: {
+  "username": "coolguy123",
   "email": "hello@example.com",
-  "first_name": "Jane",
-  "last_name": "Doe",
   "codewars_username": undefined
 }
 ```
@@ -26,8 +25,7 @@ body: {
         "type": "users",
         "attributes": {
             "email": "hello@example.com",
-            "first_name": "Jane",
-            "last_name": "Doe"
+            "username": "coolguy123"
         }
     }
 }
@@ -44,7 +42,8 @@ POST api/v1/login
 Content-Type: application/json
 Accept: application/json
 body: {
-  "email": "hello@example.com"
+  "email": "hello@example.com",
+  "username": "coolguy123"
   }
 ```
 ---
@@ -55,8 +54,7 @@ body: {
         "type": "user",
         "attributes": {
              "email": "hello@example.com",
-             "first_name": "Jane",
-             "last_name": "Doe",
+             "username": "coolguy123",
              "codewars_username": "null"
             
         }
@@ -103,7 +101,7 @@ Content-Type: application/json
 Accept: application/json
 body: {
   "user_id": "1",
-  "category": "technical",     <-- (or "behavioral")
+  "category": "technical-BE",     <-- (or "technical-FE", "behavioral")
   "front_side": "What is MVC?",
   "back_side": "stuff and things",     <-- (optional)
 }
@@ -116,7 +114,7 @@ Status 201
     "id": "1",
     "type": "flash_card",
     "attributes": {
-      "category": "technical",
+      "category": "technical-BE",
       "competence_rating": 0,
       "front_side": "what is MVC?",
       "back_side": "stuff and things",
@@ -150,7 +148,7 @@ Status 200
     "id": "1",
     "type": "flash_card",
     "attributes": {
-      "category": "technical",
+      "category": "technical-BE",
       "competence_rating": 4.5,
       "front_side": "what is MVC?",
       "back_side": "A design pattern commonly used to build web applications.",
@@ -191,7 +189,7 @@ Then I should see the following response with a status code of 200:
     "id": "1",
     "type": "flash_card",
     "attributes": {
-      "category": "technical",
+      "category": "technical-FE",
       "competence_rating": 4.5,
       "front_side": "what is MVC?",
       "back_side": "stuff and things",
@@ -244,7 +242,8 @@ Status 200
   <summary><b>Return all Flash Cards for a User</b></summary>
 
 ```shell
-GET /api/v1/users/:user_id/cards
+GET /api/v1/users/:user_id/cards 
+(potential extension: add query params to determine which deck)
 
 ```
 ---
