@@ -197,34 +197,69 @@ Status 200
 ```
 - Return all Flash Cards for a User
 ```shell
-GET /api/v1/users/user_id/cards
+GET /api/v1/users/:user_id/cards
 
 ```
 ---
 ```
 Status 200
 {
-    "data": {
-        "id": nil,
-        "type": "card",
+  "data": {
+    "technical_cards": [
+      {
+        "id": "1",
+        "type": "flash_card",
         "attributes": {
-            "cards": [
-               {"id": 1,
-                "type": 0,
-                "question": "A question",
-                "answer": "The answer to the question"
-                "rating": 0
-               },
-               {"id": 2,
-                "type": 2,
-                "question": "Another question",
-                "answer": "The answer to the new question"
-                "rating": 3
-               },
-               {...}
-                ]
-            }
+          "category": "technical",
+          "competence_rating": 4.5,
+          "front_side": "what is MVC?",
+          "back_side": "A design pattern commonly used to build web applications.",
+          "user_id": "1"
         }
-    }
+      },
+      {
+        "id": "2",
+        "type": "flash_card",
+        "attributes": {
+          "category": "technical",
+          "competence_rating": 0,
+          "front_side": "Explain your understanding of relational databases.",
+          "back_side": "",
+          "user_id": "1"
+        }
+      },
+      {...}
+    ],
+    "behavioral_cards": [
+      {
+        "id": "3",
+        "type": "flash_card",
+        "attributes": {
+          "category": "behavioral",
+          "competence_rating": 0,
+          "front_side": "What are you looking for in a role?",
+          "back_side": "",
+          "user_id": "1"
+        }
+      },
+      {
+        "id": "4",
+        "type": "flash_card",
+        "attributes": {
+          "category": "technical",
+          "competence_rating": 0,
+          "front_side": "What are you proud of?",
+          "back_side": "",
+          "user_id": "1"
+        }
+      },
+      {...}
+    ]
+  }
 }
+```
+
+If the user_id is not in the DB, i see this error with a status of 404:
+```
+  "error": "no user found with the given id."
 ```
