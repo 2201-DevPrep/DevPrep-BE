@@ -247,17 +247,7 @@ body: {
 ```
 ---
 ```
-Status 200
-{
-    "data": {
-        "id": nil,
-        "type": "card",
-        "attributes": {
-            "text": "Card 34 has been deleted sucessfully"
-            }
-        }
-    }
-}
+Status 204
 ```
   
 </details>
