@@ -237,15 +237,8 @@ If the `user_id` is not in the database, I should see this error with a status c
 
 ```shell
 DELETE /api/v1/users/:user_id/cards/:card_id
-Content-Type: application/json
-Accept: application/json
-body: {
-  "email": "hello@example.com",
-  "cardId": 34
-  }
-
 ```
----
+--- Response:
 ```
 Status 204
 ```
