@@ -22,7 +22,7 @@ class CardModel(db.Model):
     __tablename__ = 'cards'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     question = db.Column(db.Text())
     answer = db.Column(db.Text())
     star_rating = db.Column(db.Integer())
