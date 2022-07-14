@@ -2,20 +2,17 @@ version: 2.1
 orbs:
   python: circleci/python@2.0.3
 jobs:
-  build_and_test: build_and_test
-    executor: python/default # use the default executor defined within the orb
+  build-and-test:
+    docker:
+      - image: cimg/python:3.10.4
     steps:
-      - checkout # checkout source code
+      - checkout
       - python/install-packages:
           pkg-manager: pip
       - run:
           name: Run tests
-          command: python -m pytest
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - .
+          command: pytest
 workflows:
-    build_and_test:
-      jobs:
-      - build_and_test
+  sample:
+    jobs:
+      - build-and-test
