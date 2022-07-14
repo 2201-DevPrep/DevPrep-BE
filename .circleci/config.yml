@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout # checkout source code
       - python/install-packages:
-          pkg-manager: pip
+          pkg-manager: pip3
       - run:
           name: Run tests
           command: python3 -m pytest
