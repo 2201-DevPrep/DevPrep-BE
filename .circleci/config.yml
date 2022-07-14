@@ -8,10 +8,10 @@ jobs:
     steps:
       - checkout
       - python/install-packages:
-          pkg-manager: pip
+          pkg-manager: pip3
       - run:
           name: Run tests
-          command: pytest
+          command: python3 -m pytest
 workflows:
   sample:
     jobs:
