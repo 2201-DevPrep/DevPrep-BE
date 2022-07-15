@@ -1,15 +1,26 @@
-# from app import app
+from app import app, db, User
 import json
 # from models import UserModel, CardModel
+db.create_all()
 
-def xtest_register_user():
-    response = app.test_client().post('api/v1/users', data={'username': 'bonnyjowman08', 'email': 'bonfjowman.hello@notreal.com', 'codewarsUsername': undefined})
-    json_data = json.loads(response.data)
+def test_register_user():
+    users = User.query.all()
+    for user in users:
+        db.session.delete(user)
+        db.session.commit()
+
+    body = {'username': 'bonnyjowman08', 'email': 'bonfjowman.hello@notreal.com'}
+
+    response = app.test_client().post(
+            'api/v1/users', 
+            data=json.dumps(body),
+            headers={"Content-Type": "application/json"}
+        )
+    json_data = json.loads(response.data)['data']
 
     assert response.status_code == 201
 
     assert json_data['type'] == 'users'
-    assert json_data['attributes']['email'] == 'bonfjowman.hello@notreal.com'
     assert json_data['attributes']['username'] == 'bonnyjowman08'
 
 def xtest_login_user():
