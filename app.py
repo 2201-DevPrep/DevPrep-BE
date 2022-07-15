@@ -10,10 +10,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 api = Api(app)
 
+# line 14 creates the database only if DB_URL is set to 'sqlite:///test.db'
+# if coding locally, must set DB_URL manually with this command: export DB_URL='sqlite:///test.db'
 if os.environ['DB_URL'] == 'sqlite:///test.db':
     db.create_all()
 
-class User(db.Model):
+class User(db.Model): 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String())
     username = db.Column(db.String())
@@ -22,16 +24,18 @@ class User(db.Model):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
-class UserListResource(Resource):
+#lines 28-48 define the behavior of a POST request to /api/v1/users
+class UserListResource(Resource): 
     def post(self):
         new_user = User(
                 email=request.json['email'],
                 username=request.json['username']
-            )
+            ) 
         db.session.add(new_user)
         db.session.commit()
-        user = User.query.order_by(User.id.desc()).first()
-        json = {
+        # line 37 grabs the most recently created user for serialization
+        user = User.query.order_by(User.id.desc()).first() 
+        json = { # manual serialization
             "data": {
                 "id": str(user.id),
                 "type": "users",
