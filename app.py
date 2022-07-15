@@ -27,6 +27,11 @@ class User(db.Model):
 #lines 28-48 define the behavior of a POST request to /api/v1/users
 class UserListResource(Resource): 
     def post(self):
+        existing_emails = User.query.filter_by(email=request.json['email'])
+        existing_usernames = User.query.filter_by(username=request.json['username'])
+        if existing_emails or existing_usernames:
+            return { "error": "you already have an account." }, 400
+
         new_user = User(
                 email=request.json['email'],
                 username=request.json['username']
