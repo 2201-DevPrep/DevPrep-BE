@@ -1,28 +1,48 @@
-from flask import Flask
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_marshmallow import Marshmallow
+from flask_restful import Api, Resource
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-SECRET_KEY = 'this-really-needs-to-be-changed'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DB_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+api = Api(app)
 
-from models import UserModel
+if os.environ['DB_URL'] == 'sqlite:///test.db':
+    db.create_all()
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String())
+    username = db.Column(db.String())
+    codewars_username = db.Column(db.String())
 
-@app.route('/')
-def hello():
-    return "Hello World!"
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
 
+class UserListResource(Resource):
+    def post(self):
+        new_user = User(
+                email=request.json['email'],
+                username=request.json['username']
+            )
+        db.session.add(new_user)
+        db.session.commit()
+        user = User.query.order_by(User.id.desc()).first()
+        json = {
+            "data": {
+                "id": str(user.id),
+                "type": "users",
+                "attributes": {
+                    "username": user.username
+                }
+            }
+        }
+        return json, 201
 
-@app.route('/<name>')
-def hello_name(name):
-    return "Hello {}!".format(name)
-
+api.add_resource(UserListResource, '/api/v1/users')
 
 if __name__ == '__main__':
     app.run()
