@@ -1,9 +1,12 @@
 from app import app, db, User
 import json
 # from models import UserModel, CardModel
-db.create_all()
-
 def test_register_user():
+    users = User.query.all()
+    for user in users:
+        db.session.delete(user)
+        db.session.commit()
+
     body = {'username': 'bonnyjowman08', 'email': 'bonfjowman.hello@notreal.com'}
 
     response = app.test_client().post(
