@@ -258,12 +258,12 @@ GET /api/v1/users/:user_id/cards
 Status 200
 {
   "data": {
-    "technicalCards": [
+    "BEtechnicalCards": [
       {
         "id": "1",
         "type": "flashCard",
         "attributes": {
-          "category": "technical",
+          "category": "technicalBE",
           "competenceRating": 4.5,
           "frontSide": "what is MVC?",
           "backSide": "A design pattern commonly used to build web applications.",
@@ -274,7 +274,32 @@ Status 200
         "id": "2",
         "type": "flashCard",
         "attributes": {
-          "category": "technical",
+          "category": "technicalBE",
+          "competenceRating": 0,
+          "frontSide": "Explain your understanding of relational databases.",
+          "backSide": "",
+          "userId": "1"
+        }
+      },
+      {...}
+    ],
+    "FEtechnicalCards": [
+      {
+        "id": "1",
+        "type": "flashCard",
+        "attributes": {
+          "category": "technicalFE",
+          "competenceRating": 4.5,
+          "frontSide": "what is MVC?",
+          "backSide": "A design pattern commonly used to build web applications.",
+          "userId": "1"
+        }
+      },
+      {
+        "id": "2",
+        "type": "flashCard",
+        "attributes": {
+          "category": "technicalFE",
           "competenceRating": 0,
           "frontSide": "Explain your understanding of relational databases.",
           "backSide": "",
@@ -299,7 +324,7 @@ Status 200
         "id": "4",
         "type": "flashCard",
         "attributes": {
-          "category": "technical",
+          "category": "behavioral",
           "competenceRating": 0,
           "frontSide": "What are you proud of?",
           "backSide": "",
