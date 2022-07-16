@@ -96,13 +96,13 @@ def test_card_create():
     assert json_data['attributes']['frontSide'] == 'What is MVC?'
     assert json_data['attributes']['backSide'] == 'stuff and things'
 
-def xtest_card_create_invalid_user_id():
+def test_card_create_invalid_user_id():
     response = app.test_client().post('api/v1/users/1000/cards', data={'category': 'technicalBE', 'frontSide': 'What is MVC?', 'backSide': 'stuff and things'})
     json_data = json.loads(response.data)
 
     assert response.status_code == 400
 
-    assert json_data['error'] == 'invalid user_id'
+    assert json_data['error'] == 'invalid user id'
 
 def xtest_card_get():
     # Needs refactoring to make sure user and card with id's '1' are created before this is run
