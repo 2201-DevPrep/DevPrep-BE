@@ -147,13 +147,13 @@ def test_card_update():
     assert json_data['attributes']['frontSide'] == 'Do ya like apples?'
     assert json_data['attributes']['backSide'] == 'updated stuff and things'
 
-def xtest_card_update_invalid_user_id():
+def test_card_update_invalid_user_id():
     response = app.test_client().patch('api/v1/users/1000/cards/1', data={'backSide': 'updated stuff and things'})
     json_data = json.loads(response.data)
 
     assert response.status_code == 400
 
-    assert json_data['error'] == 'invalid user_id'
+    assert json_data['error'] == 'invalid user id'
 
 def xtest_card_delete():
     response = app.test_client().delete('api/v1/users/1000/cards/1')

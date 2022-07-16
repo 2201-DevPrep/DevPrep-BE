@@ -192,7 +192,7 @@ class UserCardShowResource(Resource):
     def patch(self, user_id, card_id):
         card = Card.query.get(card_id)
         
-        user = User.query.get(card.user_id)
+        user = User.query.get(user_id)
         if user == None:
             return { "error": "invalid user id" }, 400
         
