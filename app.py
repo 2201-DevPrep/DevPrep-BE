@@ -133,9 +133,37 @@ class UserShowResource(Resource):
             }
         return json, 200
 
+#user cards
+class UserCardsResource(Resource):
+    def post(self, id):
+        card = Card(
+            category=request.json['category'],
+            front=request.json['frontSide']           
+            )
+        if request.json['backSide']:
+            card.back = request.json['backSide']
+        db.session.add(card)
+        db.session.commit()
+
+        json = {
+            "data": {
+                "id": str(card.id),
+                "type": "flashCard",
+                "attributes": {
+                    "category": card.category,
+                    "competenceRating": 0.0,
+                    "frontSide": card.front,
+                    "backSide": card.back,
+                    "userId": str(card.user_id)
+                }
+            }
+        }]
+
+
 api.add_resource(UserListResource, '/api/v1/users')
 api.add_resource(LoginResource, '/api/v1/login')
 api.add_resource(UserShowResource, '/api/v1/users/<id>')
+api.add_resource(UserCardsResource, '/api/v1/users/<id>/cards')
 
 if __name__ == '__main__':
     app.run()
