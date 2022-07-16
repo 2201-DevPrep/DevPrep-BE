@@ -1,8 +1,9 @@
 from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, Model
 from flask_marshmallow import Marshmallow
 from flask_restful import Api, Resource
 import os
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DB_URL']
@@ -30,6 +31,17 @@ class User(db.Model):
         return "null"
     def behavioral_avg(self):
         return "null"
+
+class Card(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String())
+    rating = db.Column(db.Numeric())
+    front = db.Column(db.Text())
+    back = db.Column(db.Text())
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
 
 #lines 28-48 define the behavior of a POST request to /api/v1/users
 class UserListResource(Resource):
@@ -133,9 +145,39 @@ class UserShowResource(Resource):
             }
         return json, 200
 
+#user cards
+class UserCardsResource(Resource):
+    def post(self, id):
+        card = Card(
+            category=request.json['category'],
+            front=request.json['frontSide'],
+            user_id=id           
+            )
+        if request.json['backSide']:
+            card.back = request.json['backSide']
+        db.session.add(card)
+        db.session.commit()
+
+        json = {
+            "data": {
+                "id": str(card.id),
+                "type": "flashCard",
+                "attributes": {
+                    "category": card.category,
+                    "competenceRating": 0.0,
+                    "frontSide": card.front,
+                    "backSide": card.back,
+                    "userId": str(card.user_id)
+                }
+            }
+        }
+        return json, 201
+
+
 api.add_resource(UserListResource, '/api/v1/users')
 api.add_resource(LoginResource, '/api/v1/login')
 api.add_resource(UserShowResource, '/api/v1/users/<id>')
+api.add_resource(UserCardsResource, '/api/v1/users/<id>/cards')
 
 if __name__ == '__main__':
     app.run()

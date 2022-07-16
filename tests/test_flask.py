@@ -79,9 +79,14 @@ def test_update_user():
     assert type(json_data['attributes']['cwAttributes']['totalCompleted']) is int or "null"
     assert type(json_data['attributes']['cwAttributes']['languageRanks']) is dict
 
-def xtest_card_create():
-    response = app.test_client().post('api/v1/users/1/cards', data={'category': 'technicalBE', 'frontSide': 'What is MVC?', 'backSide': 'stuff and things'})
-    json_data = json.loads(response.data)
+def test_card_create():
+    body = {'category': 'technicalBE', 'frontSide': 'What is MVC?', 'backSide': 'stuff and things'}
+    response = app.test_client().post(
+        'api/v1/users/1/cards',
+        data=json.dumps(body),
+        headers={"Content-Type": "application/json"}
+        )
+    json_data = json.loads(response.data)['data']
 
     assert response.status_code == 201
 
