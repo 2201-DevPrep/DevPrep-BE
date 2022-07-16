@@ -168,7 +168,6 @@ class UserCardsResource(Resource):
         else:
             card.back = ""
 
-
         db.session.add(card)
         db.session.commit()
 
@@ -187,11 +186,44 @@ class UserCardsResource(Resource):
         }
         return json, 201
 
+# user card show
+
+class UserCardShowResource(Resource):
+    def patch(self, user_id, card_id):
+        card = Card.query.get(card_id)
+        
+        user = User.query.get(card.user_id)
+        if user == None:
+            return { "error": "invalid user id" }, 400
+        
+        for key, value in request.json.items():
+            if "category" in key:
+                card.category = value
+            if "frontSide" in key:
+                card.front = value
+            if "backSide" in key:
+                card.back = value
+            
+        json = {
+            "data": {
+                "id": str(card.id),
+                "type": "flashCard",
+                "attributes": {
+                    "category": card.category,
+                    "competenceRating": 0.0,
+                    "frontSide": card.front,
+                    "backSide": card.back,
+                    "userId": str(card.user_id)
+                }
+            }
+        }
+        return json, 200 
 
 api.add_resource(UserListResource, '/api/v1/users')
 api.add_resource(LoginResource, '/api/v1/login')
 api.add_resource(UserShowResource, '/api/v1/users/<id>')
 api.add_resource(UserCardsResource, '/api/v1/users/<id>/cards')
+api.add_resource(UserCardShowResource, '/api/v1/users/<user_id>/cards/<card_id>')
 
 if __name__ == '__main__':
     app.run()
