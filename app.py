@@ -110,7 +110,7 @@ class LoginResource(Resource):
 
 class UserShowResource(Resource):
     def patch(self, id=None):
-        user = User.query.filter_by(id=id)[0]
+        user = User.query.get(id)
         if user == None:
             return { "error": "could not find user" }, 404
 
