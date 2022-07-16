@@ -44,7 +44,7 @@ def test_login_user():
     json_data = json.loads(response.data)['data']
     assert response.status_code == 200
 
-    assert json_data['type'] == 'user_dashboard'
+    assert json_data['type'] == 'userDashboard'
     assert type(json_data['userId']) is str
     assert json_data['attributes']['username'] == 'bonnyjowman08'
     assert type(json_data['attributes']['preparednessRating']) is dict
@@ -57,14 +57,17 @@ def test_login_user():
     assert type(json_data['attributes']['cwAttributes']['languageRanks']) is dict
 
 def test_update_user():
-    response = app.test_client().post('api/v1/users/1', data={'username': 'bonnyjowman08', 'codewarsUsername': 'SuperHacker3000'})
-    json_data = json.loads(response.data)
+    body = {'username': 'bonnyjowman08', 'codewarsUsername': 'SuperHacker3000'}
+    response = app.test_client().patch(
+            'api/v1/users/1',
+            data=json.dumps(body),
+            headers={"Content-Type": "application/json"}
+        )
+    json_data = json.loads(response.data)['data']
 
     assert response.status_code == 200
-
     assert json_data['type'] == 'userDashboard'
     assert type(json_data['userId']) is str
-    assert json_data['attributes']['email'] == 'bonfjowman.hello@notreal.com'
     assert json_data['attributes']['username'] == 'bonnyjowman08'
     assert type(json_data['attributes']['preparednessRating']) is dict
     assert type(json_data['attributes']['preparednessRating']['technicalBE']) is float or "null"

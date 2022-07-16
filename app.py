@@ -71,7 +71,7 @@ class LoginResource(Resource):
             json = {
                 "data": {
                     "userId": str(user.id),
-                    "type": "user_dashboard",
+                    "type": "userDashboard",
                     "attributes": {
                         "username": user.username,
                         "preparednessRating": {
@@ -89,9 +89,41 @@ class LoginResource(Resource):
             }
         return json, 200
 
+# user show
+
+class UserShowResource(Resource):
+    def patch(self, id=None):
+        user = User.query.filter_by(id=id)[0]
+        if user == None:
+            return { "error": "could not find user" }, 404
+
+        user.codewars_username = request.json['codewarsUsername']
+        db.session.add(user)
+        db.session.commit()
+        json = {
+                "data": {
+                    "userId": str(user.id),
+                    "type": "userDashboard",
+                    "attributes": {
+                        "username": user.username,
+                        "preparednessRating": {
+                            "technicalBE": user.be_avg(),
+                            "technicalFE": user.fe_avg(),
+                            "behavioral": user.behavioral_avg()
+                        },
+                        "cwAttributes": {
+                            "cwLeaderboardPosition": "null",
+                            "totalCompleted": "null",
+                            "languageRanks": {}
+                        }
+                    }
+                }
+            }
+        return json, 200
 
 api.add_resource(UserListResource, '/api/v1/users')
 api.add_resource(LoginResource, '/api/v1/login')
+api.add_resource(UserShowResource, '/api/v1/users/<id>')
 
 if __name__ == '__main__':
     app.run()
