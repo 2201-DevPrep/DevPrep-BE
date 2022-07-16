@@ -12,7 +12,7 @@ def test_register_user():
     body = {'username': 'bonnyjowman08', 'email': 'bonfjowman.hello@notreal.com'}
 
     response = app.test_client().post(
-            'api/v1/users', 
+            'api/v1/users',
             data=json.dumps(body),
             headers={"Content-Type": "application/json"}
         )
@@ -23,47 +23,61 @@ def test_register_user():
     assert json_data['type'] == 'users'
     assert json_data['attributes']['username'] == 'bonnyjowman08'
 
-def xtest_login_user():
-    response = app.test_client().post('api/v1/login', data={'username': 'bonnyjowman08', 'email': 'bonfjowman.hello@notreal.com'})
-    json_data = json.loads(response.data)
+def test_login_user():
+    users = User.query.all()
+    for user in users:
+        db.session.delete(user)
+        db.session.commit()
 
-    assert response.status_code == 201
+    body = {'username': 'bonnyjowman08', 'email': 'bonfjowman.hello@notreal.com'}
+    seed_1 = User(email=body['email'], username=body['username'])
+    seed_2 = User(email='test@test.com', username='megahacker3000')
+    db.session.add(seed_1)
+    db.session.add(seed_2)
+    db.session.commit()
+    response = app.test_client().post(
+            'api/v1/login',
+            data=json.dumps(body),
+            headers={"Content-Type": "application/json"}
+        )
 
-    assert json_data['type'] == 'user_dashboard'
-    assert type(json_data['userId']) is str
-    assert json_data['attributes']['email'] == 'bonfjowman.hello@notreal.com'
-    assert json_data['attributes']['username'] == 'bonnyjowman08'
-    assert type(json_data['attributes']['preparednessRating']) is dict
-    assert type(json_data['attributes']['preparednessRating']['technicalBE']) is float
-    assert type(json_data['attributes']['preparednessRating']['technicalFE']) is float
-    assert type(json_data['attributes']['preparednessRating']['behavioral']) is float
-    assert type(json_data['attributes']['cwAttributes']) is dict
-    assert type(json_data['attributes']['cwAttributes']['cwLeaderboardPosition']) is int
-    assert type(json_data['attributes']['cwAttributes']['totalCompleted']) is int
-    assert type(json_data['attributes']['cwAttributes']['languageRanks']) is dict
-    assert type(json_data['attributes']['cwAttributes']['languageRanks']['java']) is int
-    assert type(json_data['attributes']['cwAttributes']['languageRanks']['ruby']) is int
-
-def xtest_update_user():
-    response = app.test_client().post('api/v1/users/1', data={'username': 'bonnyjowman08', 'codewarsUsername': 'SuperHacker3000'})
-    json_data = json.loads(response.data)
-
+    json_data = json.loads(response.data)['data']
     assert response.status_code == 200
 
     assert json_data['type'] == 'userDashboard'
     assert type(json_data['userId']) is str
-    assert json_data['attributes']['email'] == 'bonfjowman.hello@notreal.com'
     assert json_data['attributes']['username'] == 'bonnyjowman08'
     assert type(json_data['attributes']['preparednessRating']) is dict
-    assert type(json_data['attributes']['preparednessRating']['technicalBE']) is float
-    assert type(json_data['attributes']['preparednessRating']['technicalFE']) is float
-    assert type(json_data['attributes']['preparednessRating']['behavioral']) is float
+    assert type(json_data['attributes']['preparednessRating']['technicalBE']) is float or "null"
+    assert type(json_data['attributes']['preparednessRating']['technicalFE']) is float or "null"
+    assert type(json_data['attributes']['preparednessRating']['behavioral']) is float or "null"
     assert type(json_data['attributes']['cwAttributes']) is dict
-    assert type(json_data['attributes']['cwAttributes']['cwLeaderboardPosition']) is int
-    assert type(json_data['attributes']['cwAttributes']['totalCompleted']) is int
+    assert type(json_data['attributes']['cwAttributes']['cwLeaderboardPosition']) is int or "null"
+    assert type(json_data['attributes']['cwAttributes']['totalCompleted']) is int or "null"
     assert type(json_data['attributes']['cwAttributes']['languageRanks']) is dict
-    assert type(json_data['attributes']['cwAttributes']['languageRanks']['java']) is int
-    assert type(json_data['attributes']['cwAttributes']['languageRanks']['ruby']) is int
+
+def test_update_user():
+    body = {'username': 'bonnyjowman08', 'codewarsUsername': 'SuperHacker3000'}
+    response = app.test_client().patch(
+            'api/v1/users/1',
+            data=json.dumps(body),
+            headers={"Content-Type": "application/json"}
+        )
+
+    json_data = json.loads(response.data)['data']
+
+    assert response.status_code == 200
+    assert json_data['type'] == 'userDashboard'
+    assert type(json_data['userId']) is str
+    assert json_data['attributes']['username'] == 'bonnyjowman08'
+    assert type(json_data['attributes']['preparednessRating']) is dict
+    assert type(json_data['attributes']['preparednessRating']['technicalBE']) is float or "null"
+    assert type(json_data['attributes']['preparednessRating']['technicalFE']) is float or "null"
+    assert type(json_data['attributes']['preparednessRating']['behavioral']) is float or "null"
+    assert type(json_data['attributes']['cwAttributes']) is dict
+    assert type(json_data['attributes']['cwAttributes']['cwLeaderboardPosition']) is int or "null"
+    assert type(json_data['attributes']['cwAttributes']['totalCompleted']) is int or "null"
+    assert type(json_data['attributes']['cwAttributes']['languageRanks']) is dict
 
 def xtest_card_create():
     response = app.test_client().post('api/v1/users/1/cards', data={'category': 'technicalBE', 'frontSide': 'What is MVC?', 'backSide': 'stuff and things'})

@@ -15,7 +15,7 @@ api = Api(app)
 if os.environ['DB_URL'] == 'sqlite:///test.db':
     db.create_all()
 
-class User(db.Model): 
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String())
     username = db.Column(db.String())
@@ -24,8 +24,15 @@ class User(db.Model):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
+    def be_avg(self):
+        return "null"
+    def fe_avg(self):
+        return "null"
+    def behavioral_avg(self):
+        return "null"
+
 #lines 28-48 define the behavior of a POST request to /api/v1/users
-class UserListResource(Resource): 
+class UserListResource(Resource):
     def post(self):
         existing_emails = db.session.query(User).filter_by(email=request.json['email']).all()
         existing_usernames = db.session.query(User).filter_by(username=request.json['username']).all()
@@ -35,11 +42,12 @@ class UserListResource(Resource):
         new_user = User(
                 email=request.json['email'],
                 username=request.json['username']
-            ) 
+            )
         db.session.add(new_user)
         db.session.commit()
         # line 37 grabs the most recently created user for serialization
-        user = User.query.order_by(User.id.desc()).first() 
+        user = User.query.order_by(User.id.desc()).first()
+
         json = { # manual serialization
             "data": {
                 "id": str(user.id),
@@ -51,7 +59,83 @@ class UserListResource(Resource):
         }
         return json, 201
 
+#user login POST
+class LoginResource(Resource):
+    def post(self):
+        user_check = [
+            User.query.filter_by(email=request.json['email']).first(),
+            User.query.filter_by(username=request.json['username']).first()
+        ]
+
+        if user_check[0] != user_check[1] or None in user_check:
+            return { "error": "invalid login credentials" }, 400
+
+        user = user_check[0]
+
+        if user.codewars_username is None:
+            json = {
+                "data": {
+                    "userId": str(user.id),
+                    "type": "userDashboard",
+                    "attributes": {
+                        "username": user.username,
+                        "preparednessRating": {
+                            "technicalBE": user.be_avg(),
+                            "technicalFE": user.fe_avg(),
+                            "behavioral": user.behavioral_avg()
+                        },
+                        "cwAttributes": {
+                            "cwLeaderboardPosition": "null",
+                            "totalCompleted": "null",
+                            "languageRanks": {}
+                        }
+                    }
+                }
+            }
+        return json, 200
+
+# user show
+
+class UserShowResource(Resource):
+    def patch(self, id=None):
+        user = User.query.filter_by(id=id)[0]
+        if user == None:
+            return { "error": "could not find user" }, 404
+
+        for key, value in request.json.items():
+            if 'codewarsUsername' in key:
+                user.codewars_username = value
+            if 'email' in key:
+                user.email = value
+            if 'username' in key:
+                user.username = value        
+
+        db.session.add(user)
+        db.session.commit()
+        json = {
+                "data": {
+                    "userId": str(user.id),
+                    "type": "userDashboard",
+                    "attributes": {
+                        "username": user.username,
+                        "preparednessRating": {
+                            "technicalBE": user.be_avg(),
+                            "technicalFE": user.fe_avg(),
+                            "behavioral": user.behavioral_avg()
+                        },
+                        "cwAttributes": {
+                            "cwLeaderboardPosition": "null",
+                            "totalCompleted": "null",
+                            "languageRanks": {}
+                        }
+                    }
+                }
+            }
+        return json, 200
+
 api.add_resource(UserListResource, '/api/v1/users')
+api.add_resource(LoginResource, '/api/v1/login')
+api.add_resource(UserShowResource, '/api/v1/users/<id>')
 
 if __name__ == '__main__':
     app.run()
