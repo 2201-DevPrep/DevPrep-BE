@@ -153,8 +153,10 @@ class UserCardsResource(Resource):
             front=request.json['frontSide'],
             user_id=id           
             )
-        if request.json['backSide']:
+        if 'backSide' in request.json.keys():
             card.back = request.json['backSide']
+        else:
+            card.back = ""
         db.session.add(card)
         db.session.commit()
 
