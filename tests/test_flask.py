@@ -86,7 +86,7 @@ def test_card_create():
         data=json.dumps(body),
         headers={"Content-Type": "application/json"}
         )
-    json_data = json.loads(response.data)
+    json_data = json.loads(response.data)['data']
 
     assert response.status_code == 201
 
