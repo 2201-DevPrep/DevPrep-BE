@@ -56,7 +56,7 @@ def test_login_user():
     assert type(json_data['attributes']['cwAttributes']['totalCompleted']) is int or "null"
     assert type(json_data['attributes']['cwAttributes']['languageRanks']) is dict
 
-def xtest_update_user():
+def test_update_user():
     response = app.test_client().post('api/v1/users/1', data={'username': 'bonnyjowman08', 'codewarsUsername': 'SuperHacker3000'})
     json_data = json.loads(response.data)
 
@@ -67,15 +67,13 @@ def xtest_update_user():
     assert json_data['attributes']['email'] == 'bonfjowman.hello@notreal.com'
     assert json_data['attributes']['username'] == 'bonnyjowman08'
     assert type(json_data['attributes']['preparednessRating']) is dict
-    assert type(json_data['attributes']['preparednessRating']['technicalBE']) is float
-    assert type(json_data['attributes']['preparednessRating']['technicalFE']) is float
-    assert type(json_data['attributes']['preparednessRating']['behavioral']) is float
+    assert type(json_data['attributes']['preparednessRating']['technicalBE']) is float or "null"
+    assert type(json_data['attributes']['preparednessRating']['technicalFE']) is float or "null"
+    assert type(json_data['attributes']['preparednessRating']['behavioral']) is float or "null"
     assert type(json_data['attributes']['cwAttributes']) is dict
-    assert type(json_data['attributes']['cwAttributes']['cwLeaderboardPosition']) is int
-    assert type(json_data['attributes']['cwAttributes']['totalCompleted']) is int
+    assert type(json_data['attributes']['cwAttributes']['cwLeaderboardPosition']) is int or "null"
+    assert type(json_data['attributes']['cwAttributes']['totalCompleted']) is int or "null"
     assert type(json_data['attributes']['cwAttributes']['languageRanks']) is dict
-    assert type(json_data['attributes']['cwAttributes']['languageRanks']['java']) is int
-    assert type(json_data['attributes']['cwAttributes']['languageRanks']['ruby']) is int
 
 def xtest_card_create():
     response = app.test_client().post('api/v1/users/1/cards', data={'category': 'technicalBE', 'frontSide': 'What is MVC?', 'backSide': 'stuff and things'})
