@@ -62,10 +62,15 @@ class UserListResource(Resource):
 #user login POST
 class LoginResource(Resource):
     def post(self):
-        user = User.query.filter_by(email=request.json['email']).first()
+        user_check = [
+            User.query.filter_by(email=request.json['email']).first(),
+            User.query.filter_by(username=request.json['username']).first()
+        ]
 
-        if user == None:
+        if user_check[0] != user_check[1] or None in user_check:
             return { "error": "invalid login credentials" }, 400
+
+        user = user_check[0]
 
         if user.codewars_username is None:
             json = {
