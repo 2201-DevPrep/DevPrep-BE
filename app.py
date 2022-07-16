@@ -102,7 +102,14 @@ class UserShowResource(Resource):
         if user == None:
             return { "error": "could not find user" }, 404
 
-        user.codewars_username = request.json['codewarsUsername']
+        for key, value in request.json.items():
+            if 'codewarsUsername' in key:
+                user.codewars_username = value
+            if 'email' in key:
+                user.email = value
+            if 'username' in key:
+                user.username = value        
+
         db.session.add(user)
         db.session.commit()
         json = {

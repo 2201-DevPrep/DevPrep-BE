@@ -63,6 +63,7 @@ def test_update_user():
             data=json.dumps(body),
             headers={"Content-Type": "application/json"}
         )
+
     json_data = json.loads(response.data)['data']
 
     assert response.status_code == 200
