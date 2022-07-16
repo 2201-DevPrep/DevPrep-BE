@@ -148,6 +148,12 @@ class UserShowResource(Resource):
 #user cards
 class UserCardsResource(Resource):
     def post(self, id):
+        if 'frontSide' not in request.json.keys():
+            return { "error": "bad request" }, 400
+        
+        if 'category' not in request.json.keys():
+            return { "error": "bad request" }, 400
+
         card = Card(
             category=request.json['category'],
             front=request.json['frontSide'],
@@ -157,6 +163,8 @@ class UserCardsResource(Resource):
             card.back = request.json['backSide']
         else:
             card.back = ""
+
+
         db.session.add(card)
         db.session.commit()
 
