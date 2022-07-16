@@ -150,7 +150,8 @@ class UserCardsResource(Resource):
     def post(self, id):
         card = Card(
             category=request.json['category'],
-            front=request.json['frontSide']           
+            front=request.json['frontSide'],
+            user_id=id           
             )
         if request.json['backSide']:
             card.back = request.json['backSide']
