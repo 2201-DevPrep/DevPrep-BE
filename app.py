@@ -148,6 +148,10 @@ class UserShowResource(Resource):
 #user cards
 class UserCardsResource(Resource):
     def post(self, id):
+        user = User.query.get(id)
+        if user == None:
+            return { "error": "could not find user" }, 404
+
         if 'frontSide' not in request.json.keys():
             return { "error": "bad request" }, 400
         
