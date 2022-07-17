@@ -110,7 +110,7 @@ class LoginResource(Resource):
         else:
             cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
             if 'id' not in cw_response.keys():
-                return { "error": "invalid codewars username" }, 404
+                return json, 200
 
             user_cw_attributes = json['data']['attributes']['cwAttributes']
             user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
@@ -163,7 +163,7 @@ class UserShowResource(Resource):
         else:
             cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
             if 'id' not in cw_response.keys():
-                return { "error": "invalid codewars username" }, 404
+                return json, 200
 
             user_cw_attributes = json['data']['attributes']['cwAttributes']
             user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
@@ -210,7 +210,7 @@ class UserDashboardResource(Resource):
         else:
             cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
             if 'id' not in cw_response.keys():
-                return { "error": "invalid codewars username" }, 404
+                return json, 200
 
             user_cw_attributes = json['data']['attributes']['cwAttributes']
             user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
