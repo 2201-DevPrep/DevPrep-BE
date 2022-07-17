@@ -143,7 +143,6 @@ def test_card_update():
 
     assert json_data['type'] == 'flashCard'
     assert json_data['attributes']['category'] == 'technicalBE'
-    assert type(json_data['attributes']['competenceRating']) == float
     assert json_data['attributes']['frontSide'] == 'Do ya like apples?'
     assert json_data['attributes']['backSide'] == 'updated stuff and things'
 
