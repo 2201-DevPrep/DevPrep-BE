@@ -191,7 +191,9 @@ class UserCardsResource(Resource):
 class UserCardShowResource(Resource):
     def patch(self, user_id, card_id):
         card = Card.query.get(card_id)
-        
+        if card == None:
+            return { "error": "invalid card id" }, 400
+            
         user = User.query.get(user_id)
         if user == None:
             return { "error": "invalid user id" }, 400
