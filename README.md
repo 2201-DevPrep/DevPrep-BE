@@ -33,6 +33,40 @@ body: {
   
 </details>
 
+<details>
+  <summary><b>User Dashboard</b></summary>
+  
+```shell
+GET api/v1/dashboard?userId=1
+(userId query param is required)
+```
+```
+{
+  "data": {
+    "userId": "1",
+    "type": "userDashboard",
+    "attributes": {
+      "username": "coolguy123",
+      "preparednessRating": {
+        "technicalBE": 4.34,
+        "technicalFE": 3.54,
+        "behavioral": 5.0
+      },
+      "cwAttributes": {
+        "cwLeaderboardPosition": 236,
+        "totalCompleted": 230,
+        "languageRanks": {
+          "java": 1234,
+          "ruby": 1324,
+          [...]
+        }
+      }
+    }
+  }
+}
+```
+
+</details>
 
 <details>
   <summary><b>Login User</b></summary>
@@ -51,7 +85,7 @@ body: {
 {
   "data": {
     "userId": "1",
-    "type": "user_dashboard",
+    "type": "userDashboard",
     "attributes": {
       "username": "coolguy123",
       "preparednessRating": {
