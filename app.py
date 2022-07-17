@@ -224,7 +224,17 @@ class UserCardShowResource(Resource):
                 }
             }
         }
-        return json, 200 
+        return json, 200
+    
+    def delete(self, user_id, card_id):
+        card = Card.query.get(card_id)
+        if card == None:
+            return { "error": "invalid card or user" }, 400
+              
+        db.session.delete(card)
+        db.session.commit()
+
+        return {}, 204
 
 api.add_resource(UserListResource, '/api/v1/users')
 api.add_resource(LoginResource, '/api/v1/login')

@@ -163,13 +163,13 @@ def test_card_delete():
     json_data = json.loads(response.data)
 
     assert response.status_code == 400
-    assert response.json_data['error'] == 'invalid user id'
+    assert json_data['error'] == 'invalid card or user'
 
     response = app.test_client().delete('api/v1/users/1/cards/1000')
     json_data = json.loads(response.data)
 
     assert response.status_code == 400
-    assert response.json_data['error'] == 'invalid card id'
+    assert json_data['error'] == 'invalid card or user'
 
 def xtest_cards_get_list():
     # Needs refactoring to make sure user and card with id's '1' are created before this is run
