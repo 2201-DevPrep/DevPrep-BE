@@ -1,4 +1,4 @@
-from app import app, db, User
+from app import app, db, User, Card
 import json
 # from models import UserModel, CardModel
 db.create_all()
@@ -96,13 +96,13 @@ def test_card_create():
     assert json_data['attributes']['frontSide'] == 'What is MVC?'
     assert json_data['attributes']['backSide'] == 'stuff and things'
 
-def xtest_card_create_invalid_user_id():
+def test_card_create_invalid_user_id():
     response = app.test_client().post('api/v1/users/1000/cards', data={'category': 'technicalBE', 'frontSide': 'What is MVC?', 'backSide': 'stuff and things'})
     json_data = json.loads(response.data)
 
     assert response.status_code == 400
 
-    assert json_data['error'] == 'invalid user_id'
+    assert json_data['error'] == 'invalid user id'
 
 def xtest_card_get():
     # Needs refactoring to make sure user and card with id's '1' are created before this is run
@@ -117,25 +117,42 @@ def xtest_card_get():
     assert json_data['attributes']['frontSide'] == 'What is MVC?'
     assert json_data['attributes']['backSide'] == 'stuff and things'
 
-def xtest_card_update():
-    response = app.test_client().patch('api/v1/users/1/cards/1', data={'backSide': 'updated stuff and things'})
-    json_data = json.loads(response.data)
+def test_card_update():
+    cards = Card.query.all()
+    for card in cards:
+        db.session.delete(card)
+        db.session.commit()
+
+    card = Card(
+        category="technicalBE",
+        front="Do ya like apples?",
+        user_id=1
+    )
+    db.session.add(card)
+    db.session.commit()
+ 
+    body = {'backSide': 'updated stuff and things'}
+    response = app.test_client().patch(
+        f"api/v1/users/1/cards/{card.id}",
+        data=json.dumps(body),
+        headers={"Content-Type": "application/json"}
+        )
+    json_data = json.loads(response.data)['data']
 
     assert response.status_code == 200
 
     assert json_data['type'] == 'flashCard'
     assert json_data['attributes']['category'] == 'technicalBE'
-    assert type(json_data['attributes']['competenceRating']) == float
-    assert json_data['attributes']['frontSide'] == 'What is MVC?'
+    assert json_data['attributes']['frontSide'] == 'Do ya like apples?'
     assert json_data['attributes']['backSide'] == 'updated stuff and things'
 
-def xtest_card_update_invalid_user_id():
+def test_card_update_invalid_user_id():
     response = app.test_client().patch('api/v1/users/1000/cards/1', data={'backSide': 'updated stuff and things'})
     json_data = json.loads(response.data)
 
     assert response.status_code == 400
 
-    assert json_data['error'] == 'invalid user_id'
+    assert json_data['error'] == 'invalid user id'
 
 def xtest_card_delete():
     response = app.test_client().delete('api/v1/users/1000/cards/1')

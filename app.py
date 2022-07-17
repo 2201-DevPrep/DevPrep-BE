@@ -35,7 +35,7 @@ class User(db.Model):
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String())
-    rating = db.Column(db.Numeric())
+    rating = db.Column(db.Float())
     front = db.Column(db.Text())
     back = db.Column(db.Text())
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -150,7 +150,7 @@ class UserCardsResource(Resource):
     def post(self, id):
         user = User.query.get(id)
         if user == None:
-            return { "error": "could not find user" }, 404
+            return { "error": "invalid user id" }, 400
 
         if 'frontSide' not in request.json.keys():
             return { "error": "bad request" }, 400
@@ -167,7 +167,6 @@ class UserCardsResource(Resource):
             card.back = request.json['backSide']
         else:
             card.back = ""
-
 
         db.session.add(card)
         db.session.commit()
@@ -187,11 +186,51 @@ class UserCardsResource(Resource):
         }
         return json, 201
 
+# user card show
+
+class UserCardShowResource(Resource):
+    def patch(self, user_id, card_id):
+        card = Card.query.get(card_id)
+        if card == None:
+            return { "error": "invalid card id" }, 400
+            
+        user = User.query.get(user_id)
+        if user == None:
+            return { "error": "invalid user id" }, 400
+        
+        for key, value in request.json.items():
+            if "category" in key:
+                card.category = value
+            if "frontSide" in key:
+                card.front = value
+            if "backSide" in key:
+                card.back = value
+            if "competenceRating" in key:
+                card.rating = value
+
+        db.session.add(card)
+        db.session.commit()
+            
+        json = {
+            "data": {
+                "id": str(card.id),
+                "type": "flashCard",
+                "attributes": {
+                    "category": card.category,
+                    "competenceRating": card.rating,
+                    "frontSide": card.front,
+                    "backSide": card.back,
+                    "userId": str(card.user_id)
+                }
+            }
+        }
+        return json, 200 
 
 api.add_resource(UserListResource, '/api/v1/users')
 api.add_resource(LoginResource, '/api/v1/login')
 api.add_resource(UserShowResource, '/api/v1/users/<id>')
 api.add_resource(UserCardsResource, '/api/v1/users/<id>/cards')
+api.add_resource(UserCardShowResource, '/api/v1/users/<user_id>/cards/<card_id>')
 
 if __name__ == '__main__':
     app.run()
