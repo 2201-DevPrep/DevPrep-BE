@@ -1,6 +1,5 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy, Model
-from flask_marshmallow import Marshmallow
 from flask_restful import Api, Resource
 from flask_migrate import Migrate
 import requests
