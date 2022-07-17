@@ -35,7 +35,7 @@ class User(db.Model):
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String())
-    rating = db.Column(db.Numeric())
+    rating = db.Column(db.Float())
     front = db.Column(db.Text())
     back = db.Column(db.Text())
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -203,6 +203,11 @@ class UserCardShowResource(Resource):
                 card.front = value
             if "backSide" in key:
                 card.back = value
+            if "competenceRating" in key:
+                card.rating = value
+
+        db.session.add(card)
+        db.session.commit()
             
         json = {
             "data": {
@@ -210,7 +215,7 @@ class UserCardShowResource(Resource):
                 "type": "flashCard",
                 "attributes": {
                     "category": card.category,
-                    "competenceRating": 0.0,
+                    "competenceRating": card.rating,
                     "frontSide": card.front,
                     "backSide": card.back,
                     "userId": str(card.user_id)
