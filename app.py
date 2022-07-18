@@ -46,8 +46,22 @@ class Card(db.Model):
     category = db.Column(db.String())
     rating = db.Column(db.Float(), default=0.0)
     front = db.Column(db.Text())
-    back = db.Column(db.Text())
+    back = db.Column(db.Text(), default='')
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+    def as_json(self):
+        json = {
+            "id": str(self.id),
+            "type": "flashCard",
+            "attributes": {
+                "category": self.category,
+                "competenceRating": self.rating,
+                "frontSide": self.front,
+                "backSide": self.back,
+                "userId": str(self.user_id)
+            }
+        }
+        return json
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -231,6 +245,30 @@ class UserDashboardResource(Resource):
 
 #user cards
 class UserCardsResource(Resource):
+    def get(self, id):
+        user = User.query.get(id)
+        if user == None:
+            return { "error": "invalid user id" }, 404
+        
+        json = {
+            "data": {
+                "BEtechnicalCards": [],
+                "FEtechnicalCards": [],
+                "behavioralCards": []
+            }
+        }
+
+        for card in user.cards_by_category('technicalBE'):
+            json['data']['BEtechnicalCards'].append(card.as_json())
+
+        for card in user.cards_by_category('technicalFE'):
+            json['data']['FEtechnicalCards'].append(card.as_json())
+
+        for card in user.cards_by_category('behavioral'):
+            json['data']['behavioralCards'].append(card.as_json())
+
+        return json, 200
+
     def post(self, id):
         user = User.query.get(id)
         if user == None:
