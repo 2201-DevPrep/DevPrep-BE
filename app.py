@@ -185,7 +185,7 @@ class UserShowResource(Resource):
         else:
             cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
             if 'id' not in cw_response.keys():
-                return json, 200
+                return { "error": "invalid codewars username" }, 404
 
             user_cw_attributes = json['data']['attributes']['cwAttributes']
             user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
