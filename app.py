@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy, Model
 from flask_restful import Api, Resource
 from flask_migrate import Migrate
+from sqlalchemy.orm import relationship
 import requests
 import os
 
@@ -21,16 +22,55 @@ class User(db.Model):
     email = db.Column(db.String())
     username = db.Column(db.String())
     codewars_username = db.Column(db.String())
+    cards = relationship("Card", lazy='select')
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
     def be_avg(self):
-        return "null"
+        sum = 0
+        be_cards = []
+
+        for card in self.cards:
+            if card.category == 'technicalBE':
+                sum += card.rating
+                be_cards.append(card)
+
+        if be_cards: 
+            avg = sum / len(be_cards)
+            return round(avg, 2)
+        else:
+            return "null"
+
     def fe_avg(self):
-        return "null"
+        sum = 0
+        fe_cards = []
+
+        for card in self.cards:
+            if card.category == 'technicalFE':
+                sum += card.rating
+                fe_cards.append(card)
+
+        if fe_cards: 
+            avg = sum / len(fe_cards)
+            return round(avg, 2)
+        else:
+            return "null"
+
     def behavioral_avg(self):
-        return "null"
+        sum = 0
+        behav_cards = []
+
+        for card in self.cards:
+            if card.category == 'behavioral':
+                sum += card.rating
+                behav_cards.append(card)
+
+        if behav_cards: 
+            avg = sum / len(behav_cards)
+            return round(avg, 2)
+        else:
+            return "null"
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)

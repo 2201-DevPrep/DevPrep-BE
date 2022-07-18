@@ -87,18 +87,18 @@ def test_average_card_ratings():
     fe_card2 = Card(category='technicalFE', front='an FE question', rating=4)
     be_card1 = Card(category='technicalBE', front='a BE question', rating=5)
     be_card2 = Card(category='technicalBE', front='a BE question', rating=3)
-    behav_card1 = Card(category='technicalFE', front='a behavioral question', rating=4)
-    behav_card2 = Card(category='technicalFE', front='a behavioral question', rating=3)
+    behav_card1 = Card(category='behavioral', front='a behavioral question', rating=4)
+    behav_card2 = Card(category='behavioral', front='a behavioral question', rating=3)
     cards = [fe_card1, fe_card2, be_card1, be_card2, behav_card1, behav_card2]
     for card in cards:
         user.cards.append(card)
 
-    db.session.add(User)
+    db.session.add(user)
     db.session.commit()
 
     assert user.be_avg() == 4.0
     assert user.fe_avg() == 4.5
-    assert user.behavioral_avg == 3.5
+    assert user.behavioral_avg() == 3.5
 
 def test_card_create():
     body = {'category': 'technicalBE', 'frontSide': 'What is MVC?', 'backSide': 'stuff and things'}
