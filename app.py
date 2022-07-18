@@ -1,9 +1,9 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy, Model
-from flask_marshmallow import Marshmallow
 from flask_restful import Api, Resource
-import os
 from flask_migrate import Migrate
+import requests
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DB_URL']
@@ -84,30 +84,43 @@ class LoginResource(Resource):
 
         user = user_check[0]
 
-        if user.codewars_username is None:
-            json = {
-                "data": {
-                    "userId": str(user.id),
-                    "type": "userDashboard",
-                    "attributes": {
-                        "username": user.username,
-                        "preparednessRating": {
-                            "technicalBE": user.be_avg(),
-                            "technicalFE": user.fe_avg(),
-                            "behavioral": user.behavioral_avg()
-                        },
-                        "cwAttributes": {
-                            "cwLeaderboardPosition": "null",
-                            "totalCompleted": "null",
-                            "languageRanks": {}
-                        }
+        json = {
+            "data": {
+                "userId": str(user.id),
+                "type": "userDashboard",
+                "attributes": {
+                    "username": user.username,
+                    "preparednessRating": {
+                        "technicalBE": user.be_avg(),
+                        "technicalFE": user.fe_avg(),
+                        "behavioral": user.behavioral_avg()
+                    },
+                    "cwAttributes": {
+                        "cwLeaderboardPosition": "null",
+                        "totalCompleted": "null",
+                        "languageRanks": {}
                     }
                 }
             }
-        return json, 200
+        }
+
+        if user.codewars_username is None or user.codewars_username == '':
+            return json, 200
+        else:
+            cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
+            if 'id' not in cw_response.keys():
+                return json, 200
+
+            user_cw_attributes = json['data']['attributes']['cwAttributes']
+            user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
+            user_cw_attributes['totalCompleted'] = cw_response['codeChallenges']['totalCompleted']
+
+            for key, value in cw_response['ranks']['languages'].items():
+                user_cw_attributes['languageRanks'][key] = value['rank']
+
+            return json, 200
 
 # user show
-
 class UserShowResource(Resource):
     def patch(self, id=None):
         user = User.query.get(id)
@@ -143,7 +156,69 @@ class UserShowResource(Resource):
                     }
                 }
             }
-        return json, 200
+
+        if user.codewars_username is None or user.codewars_username == '':
+            return json, 200
+        else:
+            cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
+            if 'id' not in cw_response.keys():
+                return json, 200
+
+            user_cw_attributes = json['data']['attributes']['cwAttributes']
+            user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
+            user_cw_attributes['totalCompleted'] = cw_response['codeChallenges']['totalCompleted']
+
+            for key, value in cw_response['ranks']['languages'].items():
+                user_cw_attributes['languageRanks'][key] = value['rank']
+
+            return json, 200
+
+#user dashboard
+class UserDashboardResource(Resource):
+    def get(self):
+        params = dict(request.args)
+        if 'userId' not in params.keys():
+            return { 'error': 'userId param is required' }, 404
+
+        user = User.query.get(params['userId'])
+        if user == None:
+            return { 'error': 'invalid user id' }
+
+        json = {
+                "data": {
+                    "userId": str(user.id),
+                    "type": "userDashboard",
+                    "attributes": {
+                        "username": user.username,
+                        "preparednessRating": {
+                            "technicalBE": user.be_avg(),
+                            "technicalFE": user.fe_avg(),
+                            "behavioral": user.behavioral_avg()
+                        },
+                        "cwAttributes": {
+                            "cwLeaderboardPosition": "null",
+                            "totalCompleted": "null",
+                            "languageRanks": {}
+                        }
+                    }
+                }
+            }
+
+        if user.codewars_username is None or user.codewars_username == '':
+            return json, 200
+        else:
+            cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
+            if 'id' not in cw_response.keys():
+                return json, 200
+
+            user_cw_attributes = json['data']['attributes']['cwAttributes']
+            user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
+            user_cw_attributes['totalCompleted'] = cw_response['codeChallenges']['totalCompleted']
+
+            for key, value in cw_response['ranks']['languages'].items():
+                user_cw_attributes['languageRanks'][key] = value['rank']
+
+            return json, 200
 
 #user cards
 class UserCardsResource(Resource):
@@ -224,11 +299,22 @@ class UserCardShowResource(Resource):
                 }
             }
         }
-        return json, 200 
+        return json, 200
+    
+    def delete(self, user_id, card_id):
+        card = Card.query.get(card_id)
+        if card == None:
+            return { "error": "invalid card or user" }, 400
+              
+        db.session.delete(card)
+        db.session.commit()
+
+        return {}, 204
 
 api.add_resource(UserListResource, '/api/v1/users')
 api.add_resource(LoginResource, '/api/v1/login')
 api.add_resource(UserShowResource, '/api/v1/users/<id>')
+api.add_resource(UserDashboardResource, '/api/v1/dashboard')
 api.add_resource(UserCardsResource, '/api/v1/users/<id>/cards')
 api.add_resource(UserCardShowResource, '/api/v1/users/<user_id>/cards/<card_id>')
 

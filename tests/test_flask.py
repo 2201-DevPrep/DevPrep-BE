@@ -57,9 +57,11 @@ def test_login_user():
     assert type(json_data['attributes']['cwAttributes']['languageRanks']) is dict
 
 def test_update_user():
-    body = {'username': 'bonnyjowman08', 'codewarsUsername': 'SuperHacker3000'}
+    body = {'username': 'bonnyjowman08', 'codewarsUsername': 'MichaelPutnam2'}
+    user = User.query.filter_by(username='bonnyjowman08').first()
+
     response = app.test_client().patch(
-            'api/v1/users/1',
+            f'api/v1/users/{user.id}',
             data=json.dumps(body),
             headers={"Content-Type": "application/json"}
         )
@@ -78,6 +80,21 @@ def test_update_user():
     assert type(json_data['attributes']['cwAttributes']['cwLeaderboardPosition']) is int or "null"
     assert type(json_data['attributes']['cwAttributes']['totalCompleted']) is int or "null"
     assert type(json_data['attributes']['cwAttributes']['languageRanks']) is dict
+
+def xtest_update_user_invalid_username():
+    body = {'username': 'bonnyjowman08', 'codewarsUsername': 'veryInvalidUsername5748576'}
+    user = User.query.filter_by(username='bonnyjowman08').first()
+
+    response = app.test_client().patch(
+            f'api/v1/users/{user.id}',
+            data=json.dumps(body),
+            headers={"Content-Type": "application/json"}
+        )
+
+    json_data = json.loads(response.data)
+    
+    assert response.status_code == 404
+    assert json_data['error'] == 'invalid codewars username'
 
 def test_card_create():
     body = {'category': 'technicalBE', 'frontSide': 'What is MVC?', 'backSide': 'stuff and things'}
@@ -154,11 +171,22 @@ def test_card_update_invalid_user_id():
 
     assert json_data['error'] == 'invalid user id'
 
-def xtest_card_delete():
-    response = app.test_client().delete('api/v1/users/1000/cards/1')
+def test_card_delete():
+    response = app.test_client().delete('api/v1/users/1/cards/1')
 
     assert response.status_code == 204
 
+    response = app.test_client().delete('api/v1/users/1000/cards/1')
+    json_data = json.loads(response.data)
+
+    assert response.status_code == 400
+    assert json_data['error'] == 'invalid card or user'
+
+    response = app.test_client().delete('api/v1/users/1/cards/1000')
+    json_data = json.loads(response.data)
+
+    assert response.status_code == 400
+    assert json_data['error'] == 'invalid card or user'
 
 def xtest_cards_get_list():
     # Needs refactoring to make sure user and card with id's '1' are created before this is run
