@@ -96,9 +96,9 @@ def test_average_card_ratings():
     db.session.add(user)
     db.session.commit()
 
-    assert user.be_avg() == 4.0
-    assert user.fe_avg() == 4.5
-    assert user.behavioral_avg() == 3.5
+    assert user.average_card_rating_by_category('technicalBE') == 4.0
+    assert user.average_card_rating_by_category('technicalFE') == 4.5
+    assert user.average_card_rating_by_category('behavioral') == 3.5
 
 def test_card_create():
     body = {'category': 'technicalBE', 'frontSide': 'What is MVC?', 'backSide': 'stuff and things'}
