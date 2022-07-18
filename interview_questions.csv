@@ -1,0 +1,131 @@
+category,question
+technicalFE,"In as much detail as possible, explain how you would localize an application."
+technicalFE,Tell me two advantages of testing your code.
+technicalFE,Name three strategies for fixing cross-browser inconsistencies.
+technicalFE,What are some tools and strategies you use to prevent shipping unstable code to production?
+technicalFE,What factors influence whether you’ll take a progressive enhancement vs. graceful degradation approach to building an application?
+technicalFE,Define the term ‘MVC’ and explain how an application is architected when following MVC patterns.
+technicalFE,What does CORS stand for and what issue does it address?
+technicalFE,"In as much detail as possible, describe the request-response cycle."
+technicalFE,Tell me 3 new features of CSS3.
+technicalFE,Can you describe what responsive design is to you and how you would implement it?
+technicalFE,What’s the difference between display: inline and display: inline-block?
+technicalFE,What is a pseudo class? What are they used for?
+technicalFE,Describe z-index and how stacking context is formed.
+technicalFE,"If you have two elements inside of an outer containing element, one with float: left; and the other with float: right, how can you ensure that the containing element expands around the floated elements and does not collapse?"
+technicalFE,"Why is it, in general, a good idea to leave the global scope of a website as-is and never touch it?"
+technicalFE,What does event bubbling or event propagation mean?
+technicalFE,What’s the difference between undefined and null
+technicalFE,"In as much detail as possible, explain how JSON Web Tokens work."
+technicalFE,What is Ajax?
+technicalFE,"What is ""use strict"";? What are the advantages and disadvantages to using it?"
+technicalFE,Explain why the following doesn’t work as an IIFE: function foo(){ }();. What needs to be changed to properly make it an IIFE? Why?
+technicalFE,What are the pros and cons of using Promises instead of callbacks?
+technicalFE,"What is a closure, and how/why would you use one?"
+technicalFE,What advantages does React offer? What about disadvantages?
+technicalFE,Why is it generally a good idea to position CSS <link>s between <head></head> and JS <script>s just before </body>? Do you know any exceptions?
+technicalFE,"In an HTML file, what does the ‘doctype’ keyword do?"
+technicalFE,Give an example of a self-closing HTML tag.
+technicalFE,What’s the difference between window.onload and onDocumentReady
+technicalFE,Give an example of an element that is considered a ‘block-level’ element? An example of an inline element? What’s the difference between block-level and inline elements?
+technicalFE,What could we use instead of <b> tags for bold and <i> tags for italics to make our HTML more semantic?
+technicalFE,"What is the purpose of article, section, header and footer tags? Please explain with an example and why we should not use divs."
+technicalFE,What are HTML data attributes?
+technicalFE,What is the event loop?
+technicalFE,What are some popular NodeJS Modules?
+technicalFE,What is the concept of state in React?
+technicalFE,What is the virtual DOM in React?
+technicalFE,How is an array different from an object?
+technicalFE,What is the DOM? How is the virtual dom different?
+technicalFE,What does npm eject do?
+technicalFE,What does npm build do?
+technicalFE,How do you make sure your project meets the requirements you have received?
+technicalFE,What IDE do you use?
+technicalFE,How does json work?
+technicalFE,What is a restful api?
+technicalFE,What is a react component?
+technicalFE,Whats the difference between map state to props and map dispatch to props?
+technicalFE,What problems does redux solve?
+technicalFE,What are libraries you have used?
+technicalFE,What are frameworks you have used?
+technicalFE,How are props different from state?
+technicalFE,Do you know the concept of SCRUM?
+technicalFE,What is JSX?
+technicalFE,How is JSX different from HTML?
+technicalFE,Explain how a branch works
+technicalFE,What can you tell me about Rest APIs?
+technicalFE,Do you know what a bearer token is in terms of JWT?
+technicalFE,What is CORS?
+technicalFE,Whats the difference between ES5 and ES6?
+technicalFE,What method would you use to search an array and return a value?
+technicalFE,How would you find all the values for a specific key in an array of objects?
+technicalFE,How do you interact with APIs on the front end?
+technicalFE,Whats the difference between an HTTP request and response?
+technicalFE,What does a 200 status code mean?
+technicalFE,What does a 400 status code mean?
+technicalFE,What is chaining in javascript?
+technicalFE,How do you stay up-to-date on JS and React news/improvements?
+technicalFE,Why use cookies?
+technicalFE,Have you used local storage?
+technicalFE,Whats the difference between let and const?
+technicalFE,Whats your experience with React Hooks? Why use them?
+technicalBE,What is the difference between Array#map and Array#each?
+technicalBE,Name 4 ruby enumerables excluding each and map and give a brief example of what’s unique about each.
+technicalBE,"In as much detail as possible, describe the request-response cycle."
+technicalBE,What’s a module in Ruby? What’s the difference between a class and a module? What are some good use cases for modules?
+technicalBE,What are a few ways to optimize a Rails application?
+technicalBE,What is HTTP and give a brief definition?
+technicalBE,What are three tools or strategies you use to prevent shipping unstable code to production?
+technicalBE,What’s a background worker? When would we want to use a background worker?
+technicalBE,What’s the difference between a session and a cookie?
+technicalBE,Explain a git merge workflow vs a git rebase workflow
+technicalBE,What’s the difference between authentication and authorization? What tools have you used to set up auth in the past?
+technicalBE,What is TDD and give a brief definition?
+technicalBE,What does API stand for and how do you define it?
+technicalBE,What does it mean to compile code?
+technicalBE,Tell me two advantages of testing your code
+technicalBE,How would you describe the prototype in Javascript?
+technicalBE,Here at Turing you have used two types of testing Minitest and RSpec. Please give your opinion/comparison of the two.
+technicalBE,"My production and development environments are using large sets of data. What are some ways to optimize my tests to run quickly, but be thorough?"
+technicalBE,What is a Mock vs. a Stub in testing? When would you use each?
+technicalBE,What is yield in Ruby? What is it useful for? Give an example of where you would put it.
+technicalBE,Describe each of the four fundamental concepts of object-oriented programming.
+technicalBE,"An enumerable by any other name still behaves the same. Give the other name for these 3 Ruby enumerables Detect, Select, Collect"
+technicalBE,"In as much detail as possible, describe DNS."
+technicalBE,What does it mean for a function to be deprecated?
+technicalBE,What does CORS stand for and what issue does it address?
+technicalBE,What is the difference between synchronous vs. asynchronous?
+technicalBE,What is the difference between a function declaration vs a function expression
+technicalBE,"In as much detail as possible, tell me about JSON Web Tokens"
+behavioral,What made you switch from your prior career into programming?
+behavioral,Describe to me the steps you would take to build out a product.
+behavioral,Tell me how you solve a problem.
+behavioral,Describe your background. How did you get to where you are now? What was your previous career field. What did you like about it? What didn’t you like about it? Why coding?
+behavioral,Describe your time at Turing. What worked for you? What didn’t work for you? What was the structure of the program?
+behavioral,Describe your teamwork experience in a coding environment. How big of a team did you work with?
+behavioral,"A lot of this job will be full-stack. Your experience is largely __ (Back End, Front End). How do you feel like you’d be able to contribute to the team with only that experience? How comfortable are you with getting uncomfortable with a new language?"
+behavioral,Describe your coding experience and why you wish to continue?
+behavioral,What are you looking for in a company? Why would you want to work here?
+behavioral,Describe an example of how you have handled a stressful situation.
+behavioral,Have you ever had to switch gears in the middle of a project to get something fixed immediately? How did you react?
+behavioral,What is your 100% ideal role for your first web development job?
+behavioral,Tell me about a time you had a disagreement with a colleague and how you resolved it.
+behavioral,What project of yours are you most proud of and why?
+behavioral,"Explain one of the most difficult code problems you’ve had to solve, either on your own authored code, or in contributing to someone else’s."
+behavioral,Describe a time when you received feedback that you were surprised by. What did you do with that feedback?
+behavioral,Describe a successful idea or project you worked on. What are some of the challenges you had to overcome? What made it a success?
+behavioral,"Describe a project that failed, a project you had to give up on or a time you worked really hard on a project and it just didn’t pan out as expected. What happened? How did you make the decisions that you made?"
+behavioral,What is your approach to working on a team?
+behavioral,What is an area of growth for you?
+behavioral,Describe your strengths. How have you seen these in practice as a developer?
+behavioral,What is something that your hobbies or interests tell me about you that your resume cannot?
+behavioral,Tell me about a time you failed. How did you deal with the situation?
+behavioral,Give me an example of a time you were able to be creative with your work. What was exciting or difficult about it?
+behavioral,Sometimes it’s just not possible to get everything on your to-do list done. Tell me about a time your responsibilities got a little overwhelming. What did you do?
+behavioral,Tell me about a time you set a goal for yourself. How did you go about ensuring that you would meet your objective?
+behavioral,Tell me about a time when you had to rely on written communication to get your ideas across to your team.
+behavioral,Tell me about a successful presentation you gave and why you think it was a hit.
+behavioral,Describe a long-term project that you managed. How did you keep everything moving along in a timely manner?
+behavioral,Describe a time when you saw some problem and took the initiative to correct it rather than waiting for someone else to do it.
+behavioral,Tell me about a time when you worked under close supervision or extremely loose supervision. How did you handle that?
+behavioral,Tell me about a time you needed to get information from someone who wasn’t very responsive. What did you do?

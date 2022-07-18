@@ -6,6 +6,8 @@ from flask_migrate import Migrate
 from sqlalchemy.orm import relationship
 import requests
 import os
+import csv
+
 
 app = Flask(__name__)
 CORS(app)
@@ -48,6 +50,19 @@ class User(db.Model):
         else:
             return "null"
 
+    def generate_default_cards(self):
+        with open('interview_questions.csv', newline='') as f:
+            fstring = f.read()
+            csv_dicts = [{k: v for k, v in row.items()} for row in csv.DictReader(fstring.splitlines(), skipinitialspace=True)]
+            for dict in csv_dicts:
+                card = Card(
+                    category=dict['category'],
+                    front=dict['question'],
+                    user_id=self.id
+                )
+                db.session.add(card)
+                db.session.commit()            
+
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String())
@@ -85,10 +100,15 @@ class UserListResource(Resource):
                 email=request.json['email'],
                 username=request.json['username']
                 )
+
+
         db.session.add(new_user)
         db.session.commit()
         # line 37 grabs the most recently created user for serialization
         user = User.query.order_by(User.id.desc()).first()
+
+        # this is where we create the default flash cards for a new user 
+        user.generate_default_cards()
 
         json = { # manual serialization
                 "data": {
@@ -306,7 +326,7 @@ class UserCardsResource(Resource):
                     "type": "flashCard",
                     "attributes": {
                         "category": card.category,
-                        "competenceRating": 0.0,
+                        "competenceRating": card.rating,
                         "frontSide": card.front,
                         "backSide": card.back,
                         "userId": str(card.user_id)
