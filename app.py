@@ -1,12 +1,19 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy, Model
 from flask_restful import Api, Resource
+from flask_cors import CORS
 from flask_migrate import Migrate
 from sqlalchemy.orm import relationship
 import requests
 import os
 
 app = Flask(__name__)
+CORS(app)
+cors = CORS(app, resource={
+    r"/*":{
+        "origins":"*"
+    }
+})
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DB_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -185,7 +192,7 @@ class UserShowResource(Resource):
         else:
             cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
             if 'id' not in cw_response.keys():
-                return json, 200
+                return { "error": "invalid codewars username" }, 400
 
             user_cw_attributes = json['data']['attributes']['cwAttributes']
             user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
