@@ -75,7 +75,7 @@ class User(db.Model):
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String())
-    rating = db.Column(db.Float())
+    rating = db.Column(db.Float(), default=0.0)
     front = db.Column(db.Text())
     back = db.Column(db.Text())
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
