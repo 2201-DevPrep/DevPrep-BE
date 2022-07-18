@@ -113,7 +113,7 @@ def test_card_create():
 
     assert json_data['type'] == 'flashCard'
     assert json_data['attributes']['category'] == 'technicalBE'
-    assert type(json_data['attributes']['competenceRating']) == float
+    assert type(json_data['attributes']['competenceRating']) == float or int
     assert json_data['attributes']['frontSide'] == 'What is MVC?'
     assert json_data['attributes']['backSide'] == 'stuff and things'
 
@@ -203,12 +203,12 @@ def test_cards_get_list():
         db.session.commit()
 
     user = User(username='coolguy123', email='coolguy123@gmail.com')
-    fe_card1 = Card(category='technicalFE', front='an FE question', rating=5)
-    fe_card2 = Card(category='technicalFE', front='an FE question', rating=4)
-    be_card1 = Card(category='technicalBE', front='a BE question', rating=5)
-    be_card2 = Card(category='technicalBE', front='a BE question', rating=3)
-    behav_card1 = Card(category='behavioral', front='a behavioral question', rating=4)
-    behav_card2 = Card(category='behavioral', front='a behavioral question', rating=3)
+    fe_card1 = Card(category='technicalFE', front='an FE question', rating=5.0)
+    fe_card2 = Card(category='technicalFE', front='an FE question', rating=4.0)
+    be_card1 = Card(category='technicalBE', front='a BE question', rating=5.0)
+    be_card2 = Card(category='technicalBE', front='a BE question', rating=3.0)
+    behav_card1 = Card(category='behavioral', front='a behavioral question', rating=4.0)
+    behav_card2 = Card(category='behavioral', front='a behavioral question', rating=3.0)
     cards = [fe_card1, fe_card2, be_card1, be_card2, behav_card1, behav_card2]
     for card in cards:
         user.cards.append(card)
@@ -226,7 +226,7 @@ def test_cards_get_list():
         assert type(card['id']) == str
         assert card['type'] == 'flashCard'
         assert card['attributes']['category'] == 'technicalBE'
-        assert type(card['attributes']['competenceRating']) == float
+        assert type(card['attributes']['competenceRating']) == float or int
         assert type(card['attributes']['frontSide']) == str
         assert type(card['attributes']['backSide']) == str
         assert type(card['attributes']['userId']) == str
@@ -236,7 +236,7 @@ def test_cards_get_list():
         assert type(card['id']) == str
         assert card['type'] == 'flashCard'
         assert card['attributes']['category'] == 'technicalFE'
-        assert type(card['attributes']['competenceRating']) == float
+        assert type(card['attributes']['competenceRating']) == float or int
         assert type(card['attributes']['frontSide']) == str
         assert type(card['attributes']['backSide']) == str
         assert type(card['attributes']['userId']) == str
@@ -246,14 +246,30 @@ def test_cards_get_list():
         assert type(card['id']) == str
         assert card['type'] == 'flashCard'
         assert card['attributes']['category'] == 'behavioral'
-        assert type(card['attributes']['competenceRating']) == float
+        assert type(card['attributes']['competenceRating']) == float or int
         assert type(card['attributes']['frontSide']) == str
         assert type(card['attributes']['backSide']) == str
         assert type(card['attributes']['userId']) == str
 
-def xtest_card_update_invalid_user_id():
-    response = app.test_client().get('api/v1/users/1/cards')
-    json_data = json.loads(response.data)
+def test_generate_default_cards():
+    for card in Card.query.all():
+        db.session.delete(card)
+        db.session.commit()
 
-    assert response.status_code == 400
-    assert json_data['error'] == 'no user found with the given id.'
+    for user in User.query.all():
+        db.session.delete(user)
+        db.session.commit()
+
+    user = User(
+        username='Billy Jo',
+        email='bj@bjs.com'       
+    )
+    db.session.add(user)
+    db.session.commit()
+
+    assert user.cards == []
+
+    user.generate_default_cards()
+
+    assert len(user.cards) == 130
+
