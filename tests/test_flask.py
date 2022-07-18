@@ -250,3 +250,26 @@ def test_cards_get_list():
         assert type(card['attributes']['frontSide']) == str
         assert type(card['attributes']['backSide']) == str
         assert type(card['attributes']['userId']) == str
+
+def test_generate_default_cards():
+    for card in Card.query.all():
+        db.session.delete(card)
+        db.session.commit()
+
+    for user in User.query.all():
+        db.session.delete(user)
+        db.session.commit()
+
+    user = User(
+        username='Billy Jo',
+        email='bj@bjs.com'       
+    )
+    db.session.add(user)
+    db.session.commit()
+
+    assert user.cards == []
+
+    user.generate_default_cards()
+
+    assert len(user.cards) == 130
+
