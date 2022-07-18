@@ -81,20 +81,24 @@ def test_update_user():
     assert type(json_data['attributes']['cwAttributes']['totalCompleted']) is int or "null"
     assert type(json_data['attributes']['cwAttributes']['languageRanks']) is dict
 
-def xtest_update_user_invalid_username():
-    body = {'username': 'bonnyjowman08', 'codewarsUsername': 'veryInvalidUsername5748576'}
-    user = User.query.filter_by(username='bonnyjowman08').first()
+def test_average_card_ratings():
+    user = User(username='coolguy123', email='coolguy123@gmail.com')
+    fe_card1 = Card(category='technicalFE', front='an FE question', rating=5)
+    fe_card2 = Card(category='technicalFE', front='an FE question', rating=4)
+    be_card1 = Card(category='technicalBE', front='a BE question', rating=5)
+    be_card2 = Card(category='technicalBE', front='a BE question', rating=3)
+    behav_card1 = Card(category='behavioral', front='a behavioral question', rating=4)
+    behav_card2 = Card(category='behavioral', front='a behavioral question', rating=3)
+    cards = [fe_card1, fe_card2, be_card1, be_card2, behav_card1, behav_card2]
+    for card in cards:
+        user.cards.append(card)
 
-    response = app.test_client().patch(
-            f'api/v1/users/{user.id}',
-            data=json.dumps(body),
-            headers={"Content-Type": "application/json"}
-        )
+    db.session.add(user)
+    db.session.commit()
 
-    json_data = json.loads(response.data)
-    
-    assert response.status_code == 404
-    assert json_data['error'] == 'invalid codewars username'
+    assert user.average_card_rating_by_category('technicalBE') == 4.0
+    assert user.average_card_rating_by_category('technicalFE') == 4.5
+    assert user.average_card_rating_by_category('behavioral') == 3.5
 
 def test_card_create():
     body = {'category': 'technicalBE', 'frontSide': 'What is MVC?', 'backSide': 'stuff and things'}
@@ -188,31 +192,68 @@ def test_card_delete():
     assert response.status_code == 400
     assert json_data['error'] == 'invalid card or user'
 
-def xtest_cards_get_list():
+def test_cards_get_list():
     # Needs refactoring to make sure user and card with id's '1' are created before this is run
+    for card in Card.query.all():
+        db.session.delete(card)
+        db.session.commit()
+
+    for user in User.query.all():
+        db.session.delete(user)
+        db.session.commit()
+
+    user = User(username='coolguy123', email='coolguy123@gmail.com')
+    fe_card1 = Card(category='technicalFE', front='an FE question', rating=5)
+    fe_card2 = Card(category='technicalFE', front='an FE question', rating=4)
+    be_card1 = Card(category='technicalBE', front='a BE question', rating=5)
+    be_card2 = Card(category='technicalBE', front='a BE question', rating=3)
+    behav_card1 = Card(category='behavioral', front='a behavioral question', rating=4)
+    behav_card2 = Card(category='behavioral', front='a behavioral question', rating=3)
+    cards = [fe_card1, fe_card2, be_card1, be_card2, behav_card1, behav_card2]
+    for card in cards:
+        user.cards.append(card)
+
+    db.session.add(user)
+    db.session.commit()
+
     response = app.test_client().get('api/v1/users/1/cards')
-    json_data = json.loads(response.data)
+    json_data = json.loads(response.data)['data']
 
     assert response.status_code == 200
 
-    assert type(json_data['technicalCards']) == list
-    assert json_data['technicalCards'][0]['type'] == 'flashCard'
-    assert json_data['technicalCards'][0]['attributes']['category'] == 'technicalBE'
-    assert type(json_data['technicalCards'][0]['attributes']['competenceRating']) == float
-    assert type(json_data['technicalCards'][0]['attributes']['frontSide']) == str
-    assert type(json_data['technicalCards'][0]['attributes']['backSide']) == str
+    assert type(json_data['BEtechnicalCards']) == list
+    for card in json_data['BEtechnicalCards']:
+        assert type(card['id']) == str
+        assert card['type'] == 'flashCard'
+        assert card['attributes']['category'] == 'technicalBE'
+        assert type(card['attributes']['competenceRating']) == float
+        assert type(card['attributes']['frontSide']) == str
+        assert type(card['attributes']['backSide']) == str
+        assert type(card['attributes']['userId']) == str
+
+    assert type(json_data['FEtechnicalCards']) == list
+    for card in json_data['FEtechnicalCards']:
+        assert type(card['id']) == str
+        assert card['type'] == 'flashCard'
+        assert card['attributes']['category'] == 'technicalFE'
+        assert type(card['attributes']['competenceRating']) == float
+        assert type(card['attributes']['frontSide']) == str
+        assert type(card['attributes']['backSide']) == str
+        assert type(card['attributes']['userId']) == str
 
     assert type(json_data['behavioralCards']) == list
-    assert json_data['behavioralCards'][0]['type'] == 'flashCard'
-    assert json_data['behavioralCards'][0]['attributes']['category'] == 'technicalBE'
-    assert type(json_data['behavioralCards'][0]['attributes']['competenceRating']) == float
-    assert type(json_data['behavioralCards'][0]['attributes']['frontSide']) == str
-    assert type(json_data['behavioralCards'][0]['attributes']['backSide']) == str
+    for card in json_data['behavioralCards']:
+        assert type(card['id']) == str
+        assert card['type'] == 'flashCard'
+        assert card['attributes']['category'] == 'behavioral'
+        assert type(card['attributes']['competenceRating']) == float
+        assert type(card['attributes']['frontSide']) == str
+        assert type(card['attributes']['backSide']) == str
+        assert type(card['attributes']['userId']) == str
 
 def xtest_card_update_invalid_user_id():
     response = app.test_client().get('api/v1/users/1/cards')
     json_data = json.loads(response.data)
 
     assert response.status_code == 400
-
     assert json_data['error'] == 'no user found with the given id.'
