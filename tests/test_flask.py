@@ -2,6 +2,9 @@ from app import app, db, User, Card
 import json
 # from models import UserModel, CardModel
 db.create_all()
+def not_a_test():
+    var = 6
+    return "bruh and stuff"
 
 def test_register_user():
     users = User.query.all()
