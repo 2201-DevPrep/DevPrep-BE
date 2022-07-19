@@ -1,9 +1,11 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy, Model
 from flask_restful import Api, Resource
+from flask_caching import Cache
 from flask_cors import CORS
 from flask_migrate import Migrate
 from sqlalchemy.orm import relationship
+import random
 import requests
 import os
 import csv
@@ -18,10 +20,13 @@ cors = CORS(app, resource={
 })
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DB_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# initializes a memory cache and sets the default timeout to 1 day
+cache = Cache(config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 86400})
+cache.init_app(app)
 db = SQLAlchemy(app)
 api = Api(app)
 
-# line 14 creates the database only if DB_URL is set to 'sqlite:///test.db'
+# creates the database only if DB_URL is set to 'sqlite:///test.db'
 # if coding locally, must set DB_URL manually with this command: export DB_URL='sqlite:///test.db'
 if os.environ['DB_URL'] == 'sqlite:///test.db':
     db.create_all()
@@ -384,6 +389,24 @@ class UserCardShowResource(Resource):
 
         return {}, 204
 
+# quote of the day
+class QuoteResource(Resource):
+    def get(self):
+        # checks if a current quote of the day exists
+        cached_quote = cache.get('quote_of_the_day')
+        if cached_quote:
+            return cached_quote, 200
+        else:
+            # if not, reads the CSV and caches a random quote
+            with open('quotes.csv', newline='') as f:
+                fstring = f.read()
+                csv_dicts = [{k: v for k, v in row.items()} for row in csv.DictReader(fstring.splitlines(), skipinitialspace=True)]
+            
+            quote = random.choice(csv_dicts)
+            cache.set('quote_of_the_day', quote)
+            return quote, 200
+
+api.add_resource(QuoteResource, '/api/v1/quote')
 api.add_resource(UserListResource, '/api/v1/users')
 api.add_resource(LoginResource, '/api/v1/login')
 api.add_resource(UserShowResource, '/api/v1/users/<id>')
