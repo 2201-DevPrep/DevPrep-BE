@@ -2,7 +2,7 @@
 The RESTful API for DevPrep 
 
 ## Local Setup
-(Assuming you have a mac/unix machine with `sqlite 3.37.0`, `python 3.10.5` and `pip 22.0.4` installed:)
+Assuming you have a mac/unix machine with `sqlite 3.37.0`, `python 3.10.5` and `pip 22.0.4` installed:
 - run `pip3 install virtualenv` then `python3 -m venv env` to create a local environment for the project
 - run `source env/bin/activate` to connect to your local environment
 - `pip3 install -r requirements.txt` to install the required packages
