@@ -88,7 +88,7 @@ class Card(db.Model):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
-#lines 28-48 define the behavior of a POST request to /api/v1/users
+# user create
 class UserListResource(Resource):
     def post(self):
         existing_emails = db.session.query(User).filter_by(email=request.json['email']).all()
@@ -104,7 +104,7 @@ class UserListResource(Resource):
 
         db.session.add(new_user)
         db.session.commit()
-        # line 37 grabs the most recently created user for serialization
+        # grabs the most recently created user for serialization
         user = User.query.order_by(User.id.desc()).first()
 
         # this is where we create the default flash cards for a new user 
@@ -121,7 +121,7 @@ class UserListResource(Resource):
                 }
         return json, 201
 
-#user login POST
+# User Login
 class LoginResource(Resource):
     def post(self):
         user_check = [
@@ -170,7 +170,7 @@ class LoginResource(Resource):
 
             return json, 200
 
-# user show
+# user update
 class UserShowResource(Resource):
     def patch(self, id=None):
         user = User.query.get(id)
@@ -336,7 +336,6 @@ class UserCardsResource(Resource):
         return json, 201
 
 # user card show
-
 class UserCardShowResource(Resource):
     def patch(self, user_id, card_id):
         card = Card.query.get(card_id)
