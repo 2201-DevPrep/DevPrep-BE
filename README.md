@@ -1,7 +1,19 @@
 # DevPrep-BE
-The RESTful API for DevPrep
+The RESTful API for DevPrep 
 
+## Local Setup
+(Assuming you have a mac/unix machine with `sqlite 3.37.0`, `python 3.10.5` and `pip 22.0.4` installed:)
+- run `pip3 install virtualenv` then `python3 -m venv env` to create a local environment for the project
+- run `source env/bin/activate` to connect to your local environment
+- `pip3 install -r requirements.txt` to install the required packages
+- `export DB_URL='sqlite:///test.db` sets the required environment variable 
+- `flask run` to start up the server. By default it will run on `http://localhost:5000`
+- You're all set to start making some requests! 
 
+<details>
+  <summary><b/> Database Schema </b></summary>
+  <img width="349" alt="Screen Shot 2022-07-18 at 8 21 44 PM" src="https://user-images.githubusercontent.com/94757433/179650492-0d746cfb-9f9f-4ec9-9ca3-0d501bc0da57.png">
+</details>
 
 ## Endpoints
 <details>
