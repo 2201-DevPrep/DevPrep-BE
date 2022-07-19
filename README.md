@@ -8,7 +8,7 @@ The RESTful API for DevPrep
   <summary><b/> Register User </b> </summary>
   
 ```shell
-POST api/v1/users
+POST https://devprep-be.herokuapp.com/api/v1/users
 Content-Type: application/json
 Accept: application/json
 body: {
@@ -37,7 +37,7 @@ body: {
   <summary><b>User Dashboard</b></summary>
   
 ```shell
-GET api/v1/dashboard?userId=1
+GET https://devprep-be.herokuapp.com/api/v1/dashboard?userId=1
 (userId query param is required)
 ```
 ```
@@ -72,7 +72,7 @@ GET api/v1/dashboard?userId=1
   <summary><b>Login User</b></summary>
   
 ```shell
-POST api/v1/login
+POST https://devprep-be.herokuapp.com/api/v1/login
 Content-Type: application/json
 Accept: application/json
 body: {
@@ -113,7 +113,7 @@ body: {
   <summary><b>Update user</b></summary>
   
 ```shell
-PATCH /api/v1/users/:user_id
+PATCH https://devprep-be.herokuapp.com/api/v1/users/:user_id
 Content-Type: application/json
 Accept: application/json
 body: {
@@ -154,7 +154,7 @@ body: {
   <summary><b> Create new Flash Card</b></summary>
  
 ```shell
-POST /api/v1/users/:user_id/cards
+POST https://devprep-be.herokuapp.com/api/v1/users/:user_id/cards
 Content-Type: application/json
 Accept: application/json
 body: {
@@ -195,7 +195,7 @@ If the `user_id` is not present, or not in the DB, i see this error with the sta
   <summary><b> Find A Flash Card</b></summary>
   
 ```shell
-GET /api/v1/users/:user_id/cards/:card_id
+GET https://devprep-be.herokuapp.com/api/v1/users/:user_id/cards/:card_id
 ```
 ---
 ```
@@ -227,7 +227,7 @@ If the `user_id` or `:flash_card_id` is not in the DB, i see this error with the
   <summary><b>Update Flash Card</b></summary>
 
 ```shell
-PATCH api/v1/users/:user_id/cards/:card_id
+PATCH https://devprep-be.herokuapp.com/api/v1/users/:user_id/cards/:card_id
 Content-Type: application/json
 Accept: application/json
 body: {
@@ -270,7 +270,7 @@ If the `user_id` is not in the database, I should see this error with a status c
   <summary><b>Delete Flash Card</b></summary>
 
 ```shell
-DELETE /api/v1/users/:user_id/cards/:card_id
+DELETE https://devprep-be.herokuapp.com/api/v1/users/:user_id/cards/:card_id
 ```
 --- Response:
 ```
@@ -283,7 +283,7 @@ Status 204
   <summary><b>Return all Flash Cards for a User</b></summary>
 
 ```shell
-GET /api/v1/users/:user_id/cards 
+GET https://devprep-be.herokuapp.com/api/v1/users/:user_id/cards 
 (potential extension: add query params to determine which deck)
 
 ```
