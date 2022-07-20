@@ -45,15 +45,9 @@ class User(db.Model):
         return Card.query.filter_by(user_id=self.id, category=cat).all()
 
     def average_card_rating_by_category(self, cat):
-        sum = 0
-        cards = self.cards_by_category(cat)
-
-        if cards: 
-            for card in cards: sum += card.rating 
-            avg = sum / len(cards)
-            return round(avg, 2)
-        else:
-            return "null"
+        from sqlalchemy.sql import func
+        sql_result = db.session.query(func.avg(Card.rating)).filter(Card.user_id==self.id, Card.category==cat)
+        return sql_result[0][0]
 
     def generate_default_cards(self):
         with open('interview_questions.csv', newline='') as f:
@@ -66,7 +60,7 @@ class User(db.Model):
                     user_id=self.id
                 )
                 db.session.add(card)
-                db.session.commit()            
+                db.session.commit()
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -112,7 +106,7 @@ class UserListResource(Resource):
         # grabs the most recently created user for serialization
         user = User.query.order_by(User.id.desc()).first()
 
-        # this is where we create the default flash cards for a new user 
+        # this is where we create the default flash cards for a new user
         user.generate_default_cards()
 
         json = { # manual serialization
@@ -188,7 +182,7 @@ class UserShowResource(Resource):
             if 'email' in key:
                 user.email = value
             if 'username' in key:
-                user.username = value        
+                user.username = value
 
         db.session.add(user)
         db.session.commit()
@@ -281,7 +275,7 @@ class UserCardsResource(Resource):
         user = User.query.get(id)
         if user == None:
             return { "error": "invalid user id" }, 404
-        
+
         json = {
             "data": {
                 "BEtechnicalCards": [],
@@ -315,7 +309,7 @@ class UserCardsResource(Resource):
         card = Card(
                 category=request.json['category'],
                 front=request.json['frontSide'],
-                user_id=id           
+                user_id=id
                 )
         if 'backSide' in request.json.keys():
             card.back = request.json['backSide']
@@ -401,7 +395,7 @@ class QuoteResource(Resource):
             with open('quotes.csv', newline='') as f:
                 fstring = f.read()
                 csv_dicts = [{k: v for k, v in row.items()} for row in csv.DictReader(fstring.splitlines(), skipinitialspace=True)]
-            
+
             quote = random.choice(csv_dicts)
             cache.set('quote_of_the_day', quote)
             return quote, 200

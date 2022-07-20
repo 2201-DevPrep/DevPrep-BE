@@ -151,7 +151,7 @@ def test_card_update():
     )
     db.session.add(card)
     db.session.commit()
- 
+
     body = {'backSide': 'updated stuff and things'}
     response = app.test_client().patch(
         f"api/v1/users/1/cards/{card.id}",
@@ -262,7 +262,7 @@ def test_generate_default_cards():
 
     user = User(
         username='Billy Jo',
-        email='bj@bjs.com'       
+        email='bj@bjs.com'
     )
     db.session.add(user)
     db.session.commit()
@@ -272,4 +272,3 @@ def test_generate_default_cards():
     user.generate_default_cards()
 
     assert len(user.cards) == 130
-
