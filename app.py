@@ -234,8 +234,8 @@ class QuoteResource(Resource):
                 csv_dicts = [{k: v for k, v in row.items()} for row in fdicts]
 
             quote = random.choice(csv_dicts)
-            cache.set('quote_of_the_day', quote)
-            return quote, 200
+            cache.set('quote_of_the_day', quote, timeout=86400)
+            return cache.get('quote_of_the_day'), 200
 
 api.add_resource(QuoteResource, '/api/v1/quote')
 api.add_resource(UserListResource, '/api/v1/users')
