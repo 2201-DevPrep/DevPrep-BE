@@ -235,6 +235,7 @@ class QuoteResource(Resource):
 
             quote = random.choice(csv_dicts)
             cache.set('quote_of_the_day', quote, timeout=86400)
+
             return quote, 200
 
 api.add_resource(QuoteResource, '/api/v1/quote')
