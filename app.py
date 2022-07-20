@@ -4,8 +4,8 @@ from flask_restful import Api, Resource
 from flask_caching import Cache
 from flask_cors import CORS
 from flask_migrate import Migrate
+from serializers import user_serializer, card_serializer
 from sqlalchemy.orm import relationship
-from serializers import user_serializer
 import random
 import os
 import csv
@@ -46,7 +46,10 @@ class User(db.Model):
     def average_card_rating_by_category(self, cat):
         from sqlalchemy.sql import func
         sql_result = db.session.query(func.avg(Card.rating)).filter(Card.user_id==self.id, Card.category==cat)
-        return sql_result[0][0]
+        if sql_result[0][0]:
+            return round(sql_result[0][0], 2)
+        else:
+            return "null"
 
     def generate_default_cards(self):
         with open('interview_questions.csv', newline='') as f:
@@ -69,20 +72,6 @@ class Card(db.Model):
     front = db.Column(db.Text())
     back = db.Column(db.Text(), default='')
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-
-    def as_json(self):
-        json = {
-            "id": str(self.id),
-            "type": "flashCard",
-            "attributes": {
-                "category": self.category,
-                "competenceRating": self.rating,
-                "frontSide": self.front,
-                "backSide": self.back,
-                "userId": str(self.user_id)
-            }
-        }
-        return json
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -165,24 +154,7 @@ class UserCardsResource(Resource):
         if user == None:
             return { "error": "invalid user id" }, 404
 
-        json = {
-            "data": {
-                "BEtechnicalCards": [],
-                "FEtechnicalCards": [],
-                "behavioralCards": []
-            }
-        }
-
-        for card in user.cards_by_category('technicalBE'):
-            json['data']['BEtechnicalCards'].append(card.as_json())
-
-        for card in user.cards_by_category('technicalFE'):
-            json['data']['FEtechnicalCards'].append(card.as_json())
-
-        for card in user.cards_by_category('behavioral'):
-            json['data']['behavioralCards'].append(card.as_json())
-
-        return json, 200
+        return card_serializer.cards_index(user)
 
     def post(self, id):
         user = User.query.get(id)
@@ -208,9 +180,7 @@ class UserCardsResource(Resource):
         db.session.add(card)
         db.session.commit()
 
-        json = {"data": card.as_json()}
-
-        return json, 201
+        return {"data": card_serializer.show(card)}, 201
 
 # user card show
 class UserCardShowResource(Resource):
@@ -236,8 +206,7 @@ class UserCardShowResource(Resource):
         db.session.add(card)
         db.session.commit()
 
-        json = {"data": card.as_json()}
-        return json, 200
+        return {"data": card_serializer.show(card)}, 200
 
     def delete(self, user_id, card_id):
         card = Card.query.get(card_id)
