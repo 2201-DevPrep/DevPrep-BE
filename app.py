@@ -47,7 +47,8 @@ class User(db.Model):
         from sqlalchemy.sql import func
         sql_result = db.session.query(func.avg(Card.rating)).filter(Card.user_id==self.id, Card.category==cat)
         if sql_result[0][0]:
-            return round(sql_result[0][0], 2)
+            rounded = round(sql_result[0][0], 2)
+            return float(rounded)
         else:
             return "null"
 
