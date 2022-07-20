@@ -5,11 +5,10 @@ from flask_caching import Cache
 from flask_cors import CORS
 from flask_migrate import Migrate
 from sqlalchemy.orm import relationship
+from serializers import user_serializer
 import random
-import requests
 import os
 import csv
-
 
 app = Flask(__name__)
 CORS(app)
@@ -51,8 +50,9 @@ class User(db.Model):
 
     def generate_default_cards(self):
         with open('interview_questions.csv', newline='') as f:
-            fstring = f.read()
-            csv_dicts = [{k: v for k, v in row.items()} for row in csv.DictReader(fstring.splitlines(), skipinitialspace=True)]
+            fdicts = csv.DictReader(f.read().splitlines(), skipinitialspace=True)
+
+            csv_dicts = [{k: v for k, v in row.items()} for row in fdicts]
             for dict in csv_dicts:
                 card = Card(
                     category=dict['category'],
@@ -109,16 +109,7 @@ class UserListResource(Resource):
         # this is where we create the default flash cards for a new user
         user.generate_default_cards()
 
-        json = { # manual serialization
-                "data": {
-                    "id": str(user.id),
-                    "type": "users",
-                    "attributes": {
-                        "username": user.username
-                        }
-                    }
-                }
-        return json, 201
+        return user_serializer.show(user), 201
 
 # User Login
 class LoginResource(Resource):
@@ -133,41 +124,7 @@ class LoginResource(Resource):
 
         user = user_check[0]
 
-        json = {
-                "data": {
-                    "userId": str(user.id),
-                    "type": "userDashboard",
-                    "attributes": {
-                        "username": user.username,
-                        "preparednessRating": {
-                            "technicalBE": user.average_card_rating_by_category('technicalBE'),
-                            "technicalFE": user.average_card_rating_by_category('technicalFE'),
-                            "behavioral": user.average_card_rating_by_category('behavioral')
-                            },
-                        "cwAttributes": {
-                            "cwLeaderboardPosition": "null",
-                            "totalCompleted": "null",
-                            "languageRanks": {}
-                            }
-                        }
-                    }
-                }
-
-        if user.codewars_username is None or user.codewars_username == '':
-            return json, 200
-        else:
-            cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
-            if 'id' not in cw_response.keys():
-                return json, 200
-
-            user_cw_attributes = json['data']['attributes']['cwAttributes']
-            user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
-            user_cw_attributes['totalCompleted'] = cw_response['codeChallenges']['totalCompleted']
-
-            for key, value in cw_response['ranks']['languages'].items():
-                user_cw_attributes['languageRanks'][key] = value['rank']
-
-            return json, 200
+        return user_serializer.dashboard(user), 200
 
 # user update
 class UserShowResource(Resource):
@@ -186,42 +143,8 @@ class UserShowResource(Resource):
 
         db.session.add(user)
         db.session.commit()
-        json = {
-                "data": {
-                    "userId": str(user.id),
-                    "type": "userDashboard",
-                    "attributes": {
-                        "username": user.username,
-                        "preparednessRating": {
-                            "technicalBE": user.average_card_rating_by_category('technicalBE'),
-                            "technicalFE": user.average_card_rating_by_category('technicalFE'),
-                            "behavioral": user.average_card_rating_by_category('behavioral')
-                            },
-                        "cwAttributes": {
-                            "cwLeaderboardPosition": "null",
-                            "totalCompleted": "null",
-                            "languageRanks": {}
-                            }
-                        }
-                    }
-                }
-
-        if user.codewars_username is None or user.codewars_username == '':
-            return json, 200
-        else:
-            cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
-            if 'id' not in cw_response.keys():
-                return { "error": "invalid codewars username" }, 400
-
-            user_cw_attributes = json['data']['attributes']['cwAttributes']
-            user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
-            user_cw_attributes['totalCompleted'] = cw_response['codeChallenges']['totalCompleted']
-
-            for key, value in cw_response['ranks']['languages'].items():
-                user_cw_attributes['languageRanks'][key] = value['rank']
-
-            return json, 200
-
+        
+        return user_serializer.dashboard(user)
 #user dashboard
 class UserDashboardResource(Resource):
     def get(self):
@@ -231,43 +154,9 @@ class UserDashboardResource(Resource):
 
         user = User.query.get(params['userId'])
         if user == None:
-            return { 'error': 'invalid user id' }
+            return { 'error': 'invalid user id' }, 404
 
-        json = {
-                "data": {
-                    "userId": str(user.id),
-                    "type": "userDashboard",
-                    "attributes": {
-                        "username": user.username,
-                        "preparednessRating": {
-                            "technicalBE": user.average_card_rating_by_category('technicalBE'),
-                            "technicalFE": user.average_card_rating_by_category('technicalFE'),
-                            "behavioral": user.average_card_rating_by_category('behavioral')
-                            },
-                        "cwAttributes": {
-                            "cwLeaderboardPosition": "null",
-                            "totalCompleted": "null",
-                            "languageRanks": {}
-                            }
-                        }
-                    }
-                }
-
-        if user.codewars_username is None or user.codewars_username == '':
-            return json, 200
-        else:
-            cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
-            if 'id' not in cw_response.keys():
-                return json, 200
-
-            user_cw_attributes = json['data']['attributes']['cwAttributes']
-            user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
-            user_cw_attributes['totalCompleted'] = cw_response['codeChallenges']['totalCompleted']
-
-            for key, value in cw_response['ranks']['languages'].items():
-                user_cw_attributes['languageRanks'][key] = value['rank']
-
-            return json, 200
+        return user_serializer.dashboard(user)
 
 #user cards
 class UserCardsResource(Resource):
@@ -319,19 +208,8 @@ class UserCardsResource(Resource):
         db.session.add(card)
         db.session.commit()
 
-        json = {
-                "data": {
-                    "id": str(card.id),
-                    "type": "flashCard",
-                    "attributes": {
-                        "category": card.category,
-                        "competenceRating": card.rating,
-                        "frontSide": card.front,
-                        "backSide": card.back,
-                        "userId": str(card.user_id)
-                        }
-                    }
-                }
+        json = {"data": card.as_json()}
+
         return json, 201
 
 # user card show
@@ -358,19 +236,7 @@ class UserCardShowResource(Resource):
         db.session.add(card)
         db.session.commit()
 
-        json = {
-                "data": {
-                    "id": str(card.id),
-                    "type": "flashCard",
-                    "attributes": {
-                        "category": card.category,
-                        "competenceRating": card.rating,
-                        "frontSide": card.front,
-                        "backSide": card.back,
-                        "userId": str(card.user_id)
-                        }
-                    }
-                }
+        json = {"data": card.as_json()}
         return json, 200
 
     def delete(self, user_id, card_id):
@@ -393,8 +259,9 @@ class QuoteResource(Resource):
         else:
             # if not, reads the CSV and caches a random quote
             with open('quotes.csv', newline='') as f:
-                fstring = f.read()
-                csv_dicts = [{k: v for k, v in row.items()} for row in csv.DictReader(fstring.splitlines(), skipinitialspace=True)]
+                fdicts = csv.DictReader(f.read().splitlines(), skipinitialspace=True)
+
+                csv_dicts = [{k: v for k, v in row.items()} for row in fdicts]
 
             quote = random.choice(csv_dicts)
             cache.set('quote_of_the_day', quote)
