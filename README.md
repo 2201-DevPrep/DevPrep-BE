@@ -389,3 +389,15 @@ If the user_id is not in the DB, i see this error with a status of 404:
 ```
   
   </details>
+ 
+<details>
+  <summary><b>Quote of the Day</b>
+  ```shell
+  GET https://devprep-be.herokuapp.com/api/v1/quote
+  ```
+  ```shell
+  {
+    "author": "quote"
+  }
+  ```
+</details>
