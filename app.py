@@ -20,8 +20,8 @@ cors = CORS(app, resource={
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DB_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # initializes a memory cache and sets the default timeout to 1 day
-cache = Cache(config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 86400})
-cache.init_app(app)
+cache = Cache()
+cache.init_app(app, config={'CACHE_TYPE': 'FileSystemCache', 'CACHE_DIR': 'cache'})
 db = SQLAlchemy(app)
 api = Api(app)
 
@@ -235,7 +235,8 @@ class QuoteResource(Resource):
 
             quote = random.choice(csv_dicts)
             cache.set('quote_of_the_day', quote, timeout=86400)
-            return cache.get('quote_of_the_day'), 200
+
+            return quote, 200
 
 api.add_resource(QuoteResource, '/api/v1/quote')
 api.add_resource(UserListResource, '/api/v1/users')
