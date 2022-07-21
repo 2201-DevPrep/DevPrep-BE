@@ -24,6 +24,7 @@ def dashboard(user):
                         "behavioral": user.average_card_rating_by_category('behavioral')
                         },
                     "cwAttributes": {
+                        "cwUsername": "null",
                         "cwLeaderboardPosition": "null",
                         "totalCompleted": "null",
                         "languageRanks": {}
@@ -38,7 +39,7 @@ def dashboard(user):
         cw_response = requests.get(f'https://www.codewars.com/api/v1/users/{user.codewars_username}').json()
         if 'id' not in cw_response.keys():
             return { "error": "invalid codewars username" }, 400
-
+        json['data']['attributes']['cwAttributes']['cwUsername'] = user.codewars_username
         user_cw_attributes = json['data']['attributes']['cwAttributes']
         user_cw_attributes['cwLeaderboardPosition'] = cw_response['leaderboardPosition']
         user_cw_attributes['totalCompleted'] = cw_response['codeChallenges']['totalCompleted']
