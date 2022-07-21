@@ -46,4 +46,4 @@ def dashboard(user):
         for key, value in cw_response['ranks']['languages'].items():
             user_cw_attributes['languageRanks'][key] = value['rank']
 
-        return json, 200
+        return json
