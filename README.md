@@ -138,7 +138,7 @@ body: {
 ```
 {
   "data": {
-    "user_id": "1",
+    "userId": "1",
     "type": "userDashboard",
     "attributes": {
       "username": "coolguy123",
