@@ -30,52 +30,8 @@ api = Api(app)
 if os.environ['DB_URL'] == 'sqlite:///test.db':
     db.create_all()
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String())
-    username = db.Column(db.String())
-    codewars_username = db.Column(db.String())
-    cards = relationship("Card", lazy='select')
-
-    def __repr__(self):
-        return '<id {}>'.format(self.id)
-
-    def cards_by_category(self, cat):
-        return Card.query.filter_by(user_id=self.id, category=cat).all()
-
-    def average_card_rating_by_category(self, cat):
-        from sqlalchemy.sql import func
-        sql_result = db.session.query(func.avg(Card.rating)).filter(Card.user_id==self.id, Card.category==cat)
-        if sql_result[0][0]:
-            rounded = round(sql_result[0][0], 2)
-            return float(rounded)
-        else:
-            return "null"
-
-    def generate_default_cards(self):
-        with open('interview_questions.csv', newline='') as f:
-            fdicts = csv.DictReader(f.read().splitlines(), skipinitialspace=True)
-
-            csv_dicts = [{k: v for k, v in row.items()} for row in fdicts]
-            for dict in csv_dicts:
-                card = Card(
-                    category=dict['category'],
-                    front=dict['question'],
-                    user_id=self.id
-                )
-                db.session.add(card)
-                db.session.commit()
-
-class Card(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String())
-    rating = db.Column(db.Float(), default=0.0)
-    front = db.Column(db.Text())
-    back = db.Column(db.Text(), default='')
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-
-    def __repr__(self):
-        return '<id {}>'.format(self.id)
+from models.user import User
+from models.card import Card
 
 # user create
 class UserListResource(Resource):
