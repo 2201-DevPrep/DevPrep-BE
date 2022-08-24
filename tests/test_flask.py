@@ -1,4 +1,5 @@
-from app import app, db, User, Card
+from app import app, db, Card
+from models.user import User
 import json
 # from models import UserModel, CardModel
 db.create_all()
