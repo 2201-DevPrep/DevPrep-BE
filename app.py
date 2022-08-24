@@ -184,7 +184,7 @@ class QuoteResource(Resource):
             return cached_quote, 200
         else:
             # if not, reads the CSV and caches a random quote
-            with open('quotes.csv', newline='') as f:
+            with open('data/quotes.csv', newline='') as f:
                 fdicts = csv.DictReader(f.read().splitlines(), skipinitialspace=True)
 
                 csv_dicts = [{k: v for k, v in row.items()} for row in fdicts]

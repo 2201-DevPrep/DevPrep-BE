@@ -24,7 +24,7 @@ class User(db.Model):
             return "null"
 
     def generate_default_cards(self):
-        with open('interview_questions.csv', newline='') as f:
+        with open('data/interview_questions.csv', newline='') as f:
             fdicts = csv.DictReader(f.read().splitlines(), skipinitialspace=True)
 
             csv_dicts = [{k: v for k, v in row.items()} for row in fdicts]
