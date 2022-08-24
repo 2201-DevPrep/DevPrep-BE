@@ -1,5 +1,7 @@
-from app import db, csv, relationship
+from app import db
+from sqlalchemy.orm import relationship
 from models.card import Card
+import csv
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

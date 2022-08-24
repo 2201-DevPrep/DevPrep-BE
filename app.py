@@ -1,14 +1,9 @@
-from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy, Model
-from flask_restful import Api, Resource
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_restful import Api
 from flask_caching import Cache
 from flask_cors import CORS
-from flask_migrate import Migrate
-from serializers import user_serializer, card_serializer
-from sqlalchemy.orm import relationship
-import random
 import os
-import csv
 
 app = Flask(__name__)
 CORS(app)
@@ -25,182 +20,29 @@ cache.init_app(app, config={'CACHE_TYPE': 'FileSystemCache', 'CACHE_DIR': 'cache
 db = SQLAlchemy(app)
 api = Api(app)
 
+from models.user import User
+from models.card import Card
+
 # creates the database only if DB_URL is set to 'sqlite:///test.db'
 # if coding locally, must set DB_URL manually with this command: export DB_URL='sqlite:///test.db'
 if os.environ['DB_URL'] == 'sqlite:///test.db':
     db.create_all()
 
-from models.user import User
-from models.card import Card
+from resources.users.list_resource import UserListResource
+from resources.users.show_resource import UserShowResource
+from resources.users.login_resource import LoginResource
+from resources.users.dashboard_resource import DashboardResource
+from resources.cards.list_resource import CardListResource
+from resources.cards.show_resource import CardShowResource
+from resources.quote_resource import QuoteResource
 
-# user create
-class UserListResource(Resource):
-    def post(self):
-        existing_emails = db.session.query(User).filter_by(email=request.json['email']).all()
-        existing_usernames = db.session.query(User).filter_by(username=request.json['username']).all()
-        if existing_emails or existing_usernames:
-            return { "error": "you already have an account." }, 400
-
-        new_user = User(
-                email=request.json['email'],
-                username=request.json['username']
-                )
-
-
-        db.session.add(new_user)
-        db.session.commit()
-        # grabs the most recently created user for serialization
-        user = User.query.order_by(User.id.desc()).first()
-
-        # this is where we create the default flash cards for a new user
-        user.generate_default_cards()
-
-        return user_serializer.show(user), 201
-
-# User Login
-class LoginResource(Resource):
-    def post(self):
-        user_check = [
-                User.query.filter_by(email=request.json['email']).first(),
-                User.query.filter_by(username=request.json['username']).first()
-                ]
-
-        if user_check[0] != user_check[1] or None in user_check:
-            return { "error": "invalid login credentials" }, 400
-
-        user = user_check[0]
-
-        return user_serializer.dashboard(user), 200
-
-# user update
-class UserShowResource(Resource):
-    def patch(self, id=None):
-        user = User.query.get(id)
-        if user == None:
-            return { "error": "could not find user" }, 404
-
-        for key, value in request.json.items():
-            if 'codewarsUsername' in key:
-                user.codewars_username = value
-            if 'email' in key:
-                user.email = value
-            if 'username' in key:
-                user.username = value
-
-        db.session.add(user)
-        db.session.commit()
-        
-        return user_serializer.dashboard(user)
-#user dashboard
-class UserDashboardResource(Resource):
-    def get(self):
-        params = dict(request.args)
-        if 'userId' not in params.keys():
-            return { 'error': 'userId param is required' }, 404
-
-        user = User.query.get(params['userId'])
-        if user == None:
-            return { 'error': 'invalid user id' }, 404
-
-        return user_serializer.dashboard(user)
-
-#user cards
-class UserCardsResource(Resource):
-    def get(self, id):
-        user = User.query.get(id)
-        if user == None:
-            return { "error": "invalid user id" }, 404
-
-        return card_serializer.cards_index(user)
-
-    def post(self, id):
-        user = User.query.get(id)
-        if user == None:
-            return { "error": "invalid user id" }, 400
-
-        if 'frontSide' not in request.json.keys():
-            return { "error": "bad request" }, 400
-
-        if 'category' not in request.json.keys():
-            return { "error": "bad request" }, 400
-
-        card = Card(
-                category=request.json['category'],
-                front=request.json['frontSide'],
-                user_id=id
-                )
-        if 'backSide' in request.json.keys():
-            card.back = request.json['backSide']
-        else:
-            card.back = ""
-
-        db.session.add(card)
-        db.session.commit()
-
-        return {"data": card_serializer.show(card)}, 201
-
-# user card show
-class UserCardShowResource(Resource):
-    def patch(self, user_id, card_id):
-        card = Card.query.get(card_id)
-        if card == None:
-            return { "error": "invalid card id" }, 400
-
-        user = User.query.get(user_id)
-        if user == None:
-            return { "error": "invalid user id" }, 400
-
-        for key, value in request.json.items():
-            if "category" in key:
-                card.category = value
-            if "frontSide" in key:
-                card.front = value
-            if "backSide" in key:
-                card.back = value
-            if "competenceRating" in key:
-                card.rating = value
-
-        db.session.add(card)
-        db.session.commit()
-
-        return {"data": card_serializer.show(card)}, 200
-
-    def delete(self, user_id, card_id):
-        card = Card.query.get(card_id)
-        if card == None:
-            return { "error": "invalid card or user" }, 400
-
-        db.session.delete(card)
-        db.session.commit()
-
-        return {}, 204
-
-# quote of the day
-class QuoteResource(Resource):
-    def get(self):
-        # checks if a current quote of the day exists
-        cached_quote = cache.get('quote_of_the_day')
-        if cached_quote:
-            return cached_quote, 200
-        else:
-            # if not, reads the CSV and caches a random quote
-            with open('data/quotes.csv', newline='') as f:
-                fdicts = csv.DictReader(f.read().splitlines(), skipinitialspace=True)
-
-                csv_dicts = [{k: v for k, v in row.items()} for row in fdicts]
-
-            quote = random.choice(csv_dicts)
-            cache.set('quote_of_the_day', quote, timeout=86400)
-
-            return quote, 200
-
-api.add_resource(QuoteResource, '/api/v1/quote')
 api.add_resource(UserListResource, '/api/v1/users')
-api.add_resource(LoginResource, '/api/v1/login')
 api.add_resource(UserShowResource, '/api/v1/users/<id>')
-api.add_resource(UserDashboardResource, '/api/v1/dashboard')
-api.add_resource(UserCardsResource, '/api/v1/users/<id>/cards')
-api.add_resource(UserCardShowResource, '/api/v1/users/<user_id>/cards/<card_id>')
+api.add_resource(LoginResource, '/api/v1/login')
+api.add_resource(DashboardResource, '/api/v1/dashboard')
+api.add_resource(CardListResource, '/api/v1/users/<id>/cards')
+api.add_resource(CardShowResource, '/api/v1/users/<user_id>/cards/<card_id>')
+api.add_resource(QuoteResource, '/api/v1/quote')
 
 if __name__ == '__main__':
     app.run()
